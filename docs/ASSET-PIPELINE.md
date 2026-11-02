@@ -1,33 +1,40 @@
-# Asset pipeline — cloud-first
+# Asset pipeline
 
-All heavy compute (reconstruction/training) happens in the cloud. The repo only references hosted, optimized files.
+Two kinds of assets: **artwork photos** (needed from Wave A) and **room scans** (optional, FEAT-06). Venue measurements and wall photos are covered in [VENUE-CAPTURE.md](./VENUE-CAPTURE.md).
 
-## Steps
+All heavy processing happens in the cloud; the repo only references optimized files ([PRD §6.1](../PRD-3d-gallery.md#61-hardware-constraints-cloud-first)).
 
-| # | Step | Tool | Output | Time |
-|---|------|------|--------|------|
-| 1 | **Capture** artwork and/or space | Phone camera: photos for flat work; slow multi-angle video sweep for 3D/rooms | Raw photos / video (keep originals **outside** the repo) | 15–30 min |
-| 2 | **Reconstruct** | World Labs (Marble), Luma AI, or Polycam (D-07) | Trained splat / mesh | 30–60 min (cloud) |
-| 3 | **Clean** | Cloud tool's crop/mask editor | Background noise and floaters removed | 10–20 min |
-| 4 | **Export** | Same tool | `.spz` (preferred, compressed) · `.ply` · `.glb` for meshes · WebP for flat images | — |
-| 5 | **Host** | Small files: `app/public/assets/`; large splats: cloud bucket / CDN | Stable URL | — |
-| 6 | **Reference** | `app/src/data/artworks.ts` | Entry with URL, title, medium, year, narrative, position | — |
+## Artwork photos
 
-## Capture tips
+| # | Step | Notes |
+|---|------|-------|
+| 1 | **Measure** each piece: width × height (and depth) in inches; note frame size if framed | Measure the outer edge of what hangs on the wall |
+| 2 | **Photograph** straight-on, even daylight or diffuse light, no glare; fill the frame | Lay flat or hang level; phone parallel to the piece |
+| 3 | **Crop** exactly to the edges; straighten/perspective-correct | The cropped photo's proportions must match width × height (the app warns if off > 3 %) |
+| 4 | **Export** JPG or WebP, long edge ~2048 px | Name `kebab-case`: `harbor-dusk.webp` |
+| 5 | **Add** to `app/public/art/` and an entry in `app/src/data/artworks.json` | title, medium, widthIn, heightIn, frame |
 
-- Even, diffuse light; avoid direct sun and reflections on glass.
-- Video sweeps: slow, overlapping arcs at 2–3 heights; lock exposure if possible.
-- Flat 2D art usually looks best as a high-res **image on a plane** in a splat room, not as a splat itself.
+If you already have good portfolio photos, reuse them; only the crop and dimensions matter.
+
+## Room scans (FEAT-06, optional)
+
+| # | Step | Tool | Output |
+|---|------|------|--------|
+| 1 | Capture video sweep of the room | Phone, in the capture app | Raw video (keep outside the repo) |
+| 2 | Reconstruct | Polycam, Luma AI, or World Labs (D-07) | Trained splat |
+| 3 | Clean | Cloud tool's crop editor: remove outside/floaters | Clean splat |
+| 4 | Export | `.spz` (preferred, compressed) or `.ply` | One file per venue |
+| 5 | Host | Files > 50 MB go to a cloud bucket/CDN, not git | Stable URL |
+| 6 | Reference | `scan` field in the venue JSON | Aligned in arrange mode |
 
 ## File rules
 
-- Prefer `.spz` for splats (much smaller than `.ply`).
-- Files > 50 MB: host outside git (bucket/CDN), not in `app/public/`.
-- Name files `kebab-case` with a version: `north-wing-v2.spz`. Change the version when replacing a file (cache busting — FEAT-06).
-- Keep a row per asset below.
+- Version file names when replacing: `corner-bistro-scan-v2.spz` (cache busting).
+- Never commit raw videos or original full-resolution photos.
+- Privacy: the repo and site are public (D-03). Commit only cropped wall photos, never people or originals. Removing a file later hides it from the site, but it stays in git history.
 
 ## Asset register
 
-| ID | Artwork / space | Source tool | Format | Size | URL | Status |
-|----|-----------------|-------------|--------|------|-----|--------|
+| ID | What | Venue | Format | Size | Location | Status |
+|----|------|-------|--------|------|----------|--------|
 | — | — | — | — | — | — | — |

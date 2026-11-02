@@ -7,3 +7,7 @@ dist/
 .DS_Store
 Thumbs.db
 .cursor/projects/
+
+# Raw venue sketches, photos, and video (repo is public; only cropped wall photos go in app/)
+captures/*
+!captures/README.md
