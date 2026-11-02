@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-00 |
 | Wave | A |
-| Status | `ready` |
+| Status | `building` |
 | Flows | [FLOW-00](../FLOWS.md#flow-00-owner-opens-the-pitch-p2) steps 1–3, [FLOW-03](../FLOWS.md#flow-03-list-view-p2-fallback--shortcut) (stub) |
 | Depends on | — |
 | Blocks | All |
@@ -81,5 +81,5 @@ flowchart TD
 
 - [x] D-01 WebGL2 · D-02 plain Three.js + TypeScript · D-03 GitHub Pages (all resolved)
 - [ ] One-time on GitHub: **Settings → Pages → Source: GitHub Actions**
-- [ ] Implement map nodes incl. not-found, unsupported, error
+- [x] Implement map nodes incl. not-found, unsupported, error (test with `?simulate=no-webgl` / `?simulate=load-error`)
 - [ ] PR check + deploy green

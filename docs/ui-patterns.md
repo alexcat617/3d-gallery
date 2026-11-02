@@ -18,14 +18,23 @@ Before shipping UI changes, sanity-check at **320px**, **390px**, and **1280px**
 
 ### Page shell
 
-- Document max content width and padding for non-canvas UI here.
-- Separate **chrome** (nav, title) from **canvas** (WebGL) layers in CSS stacking.
+Implemented in FEAT-00 (`app/index.html`, `app/src/style.css`, `app/src/ui/screens.ts`).
+
+- Two fixed layers: `#stage` (canvas, `z-index: 0`, `touch-action: none`) and `#ui` (HTML, `z-index: 10`). `#ui` ignores pointer events except on its children, so the canvas stays draggable.
+- **Full screens** (`.screen` > `.panel`): loading, error, list, not-found, home. Opaque background over the canvas; the canvas gets `aria-hidden="true"` while one is shown. Content max width `40rem`, 16 px side padding, safe-area insets.
+- **Room chrome** (`.topbar`): venue name (h1) + "Artwork by {artist}" + one secondary button. Translucent white with blur; safe-area top inset.
+- Focus: each full screen moves focus to its h1 (`tabindex="-1"`, no outline on the heading). Returning from the list puts focus back on "All Pieces". Escape closes the list.
+- Buttons: pill shape, min 44 × 44 px. `.button--primary` dark fill / white text; `.button--secondary` white fill / dark text + border (explicit colors). Focus ring: 3 px `#2563eb`, 2 px offset.
+- Copy patterns: page titles in title case ("The Room Didn’t Load", "Page Not Available"); buttons verb-first sentence case ("Try again", "See pieces as a list", "Back to room").
 
 ### Gallery / 3D viewport
 
-- Reserve aspect ratio or min-height so layout doesn’t jump on load.
-- Loading skeleton or progress for asset fetch.
-- Document pointer vs keyboard behavior in this section when implemented.
+- Full-viewport canvas; renders on demand (no idle animation loop).
+- Loading: status text + progress bar (`role="progressbar"`) fed by one Three.js `LoadingManager` (`LoadTracker`).
+- Errors: full-screen message, **Try again** (primary), **See pieces as a list** (secondary, when venue data loaded).
+- No WebGL2: list view with a note, no 3D.
+- Test hooks: `?simulate=no-webgl`, `?simulate=load-error` (first attempt fails, retry succeeds), `?quality=low|medium|high`.
+- Document pointer vs keyboard behavior here when viewpoints land (FEAT-03).
 
 ### Overlays & detail
 
