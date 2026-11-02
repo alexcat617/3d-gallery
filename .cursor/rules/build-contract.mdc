@@ -1,0 +1,26 @@
+---
+description: Feature build contract for 3D Gallery — how "build FEAT-XX" works
+alwaysApply: true
+---
+
+# 3D Gallery — build contract
+
+When asked to **build FEAT-XX** (or any feature work in `app/`), follow [FEATURES.md § Build handoff contract](../../FEATURES.md#build-handoff-contract).
+
+Short version:
+
+1. Work on `feat/feat-XX-<name>` branched from up-to-date `main` — never on `main`.
+2. Sources, in priority order on conflict: **behavior** → `features/FEAT-XX-*.md` (REQs, AC, flow map) then `FLOWS.md` shared rules; **look & a11y** → `docs/ux-principles.md` + `docs/ui-patterns.md`; **tech** → `PRD-3d-gallery.md` §7 + resolved decisions in `FEATURES.md`.
+3. Build every flow-map node incl. loading, error, empty, and reduced-motion states.
+4. Before finishing: `npm run lint`, `npm run typecheck`, `npm run build` pass in `app/`; give a click-through checklist mapped to AC.
+5. Update FEAT status + `FEATURES.md` Changelog.
+
+## Tech guardrails
+
+- Renderer: `THREE.WebGLRenderer` (Spark does not support `WebGPURenderer`) unless decision D-01 changes.
+- Artwork content lives in `app/src/data/artworks.ts`, not hard-coded in scene code.
+- Large assets (> 50 MB) are hosted outside git; see `docs/ASSET-PIPELINE.md`.
+- Cloud-first: the dev laptop has integrated graphics. Never add local reconstruction/processing steps; keep `low` quality as the dev default; don't raise default splat counts or DPR without a quality-tier setting (PRD §6.1).
+- Deploy only from `main`.
+
+Don't commit or push unless asked.
