@@ -1,0 +1,20 @@
+{
+  "id": "sample-room",
+  "name": "Sample Room",
+  "ceilingIn": 120,
+  "corners": [
+    { "xIn": 0, "zIn": 0 },
+    { "xIn": 240, "zIn": 0 },
+    { "xIn": 240, "zIn": 180 },
+    { "xIn": 0, "zIn": 180 }
+  ],
+  "wallColor": "#e9e4dc",
+  "walls": [
+    { "id": "north-wall", "label": "North wall" },
+    { "id": "east-wall", "label": "East wall" },
+    { "id": "south-wall", "label": "South wall" },
+    { "id": "west-wall", "label": "West wall" }
+  ],
+  "placements": [],
+  "viewpoints": []
+}

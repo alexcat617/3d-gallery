@@ -63,10 +63,10 @@ Skills from [cuellarfr/design-skills](https://github.com/cuellarfr/design-skills
 
 ## Run locally
 
-After FEAT-00:
-
 ```bash
 cd app
 npm install
 npm run dev
 ```
+
+Then open `http://localhost:5173/3d-gallery/v/sample-room`. On your phone (same Wi-Fi), use the **Network** address the dev server prints. More in [GIT-WORKFLOW § Run the app](./docs/GIT-WORKFLOW.md#run-the-app).

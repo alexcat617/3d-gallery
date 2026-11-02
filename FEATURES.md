@@ -23,7 +23,7 @@ Work item shape: Persona lens → User stories → Requirements → Acceptance c
 
 | ID | Feature | Wave | Status | Flows | Branch |
 |----|---------|------|--------|-------|--------|
-| [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `ready` | FLOW-00, 03 | `feat/feat-00-foundation` |
+| [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `building` | FLOW-00, 03 | `feat/feat-00-foundation` |
 | [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `ready` | FLOW-04 | `feat/feat-01-measured-room` |
 | [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `ready` | FLOW-04 | `feat/feat-02-artwork-to-scale` |
 | [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `ready` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
@@ -98,3 +98,4 @@ Don't commit or push unless asked.
 | 2026-11-02 | Capture workflow: rough sketch + photos with reference objects → agent builds venue file → iterate. Private `captures/` folder (git-ignored); `estimated[]` + `fixtures[]` in data model |
 | 2026-11-02 | Resolved D-01, 02, 04, 05, 06, 13 (artist name "Alex Farrell"); D-08 deferred. FEAT-00…05 + 07 → `ready`; FEAT-06 waits on D-07 |
 | 2026-11-02 | Variable heights: per-venue `ceilingIn` plus per-wall `heightIn`, slopes, and `soffits[]`; hang checks use the actual top of wall; capture guide measures height at each art wall |
+| 2026-11-02 | **FEAT-00 built:** Vite + TS + Three.js app in `app/`; `/v/<id>` routing with per-venue pages; loading/error/unsupported/not-found/list screens; quality setting; PR check + GitHub Pages deploy workflows |

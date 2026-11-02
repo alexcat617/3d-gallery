@@ -61,6 +61,10 @@ npm install
 npm run dev
 ```
 
+Open `http://localhost:5173/3d-gallery/v/sample-room` (every URL starts with `/3d-gallery/`, the same as the live site).
+
+If `npm install` fails with "unable to verify the first certificate", run it with Windows' certificate store: in PowerShell, `$env:NODE_OPTIONS="--use-system-ca"; npm install`.
+
 The dev server starts in `low` quality to keep the laptop responsive. Add `?quality=high` to the URL for a quick look at full detail.
 
 **Test on your phone:** with phone and laptop on the same Wi-Fi, open the **Network** URL that `npm run dev` prints (e.g. `http://192.168.1.20:5173`). If Windows asks about the firewall, allow private networks.
