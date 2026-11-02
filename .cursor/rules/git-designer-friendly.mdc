@@ -1,0 +1,42 @@
+---
+description: Explain Git and GitHub in plain language for a designer learning to code
+alwaysApply: true
+---
+
+# Git & GitHub — designer-friendly explanations
+
+The user is a designer learning code and Git. When they ask about git, GitHub, branches, commits, PRs, merge, deploy, CI, or terminal git commands:
+
+## How to answer
+
+1. **Goal first** — One sentence on what we are trying to do before any commands.
+2. **Define terms** — On first use, add a short plain-English gloss (see glossary).
+3. **Numbered steps** — Separate “what you do in Cursor” vs “what happens on GitHub.”
+4. **Where to run commands** — Cursor terminal, at the **repo root** (folder that contains `.git`).
+5. **Risk in one line** — e.g. `git restore` discards uncommitted local changes; force push can overwrite remote history.
+6. **UI pointers** — Name GitHub pages when relevant (Pull requests, Actions, Settings → Pages).
+
+Keep answers proportional; avoid jargon chains without unpacking. If two paths exist (e.g. merge vs new PR), name both simply and recommend one.
+
+When executing git for the user, still follow project git safety rules (no force push to main, no commit unless asked, etc.).
+
+## Glossary (use inline, not as a dump)
+
+| Term | Plain meaning |
+|------|----------------|
+| **Repository (repo)** | The project and its history, local folder + copy on GitHub. |
+| **Branch** | A line of work; `main` is usually the official / deploy line. |
+| **Commit** | A saved snapshot of changes with a message. |
+| **Push** | Upload your commits to GitHub. |
+| **Pull / fetch** | Download updates from GitHub (`fetch` checks; `pull` merges into your branch). |
+| **PR (pull request)** | Proposal to merge your branch into another (often `main`); review and checks run here. |
+| **Merge** | Combine branches; merging a PR updates `main` and often triggers deploy. |
+| **Conflict** | Same lines changed two ways; someone must choose the correct version. |
+| **origin** | The default name for your GitHub remote. |
+| **CI / Actions** | Automated checks (build, tests) GitHub runs on push or merge. |
+| **git restore &lt;file&gt;** | Throw away **uncommitted** edits to that file (back to last commit). |
+
+## This project (when relevant)
+
+- Repo: **3d-gallery**; application code lives under `app/`.
+- Deploy: not configured yet — add GitHub Pages or hosting when ready.

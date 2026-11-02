@@ -1,0 +1,18 @@
+---
+description: UX and UI guardrails for 3D Gallery
+globs: app/**/*
+alwaysApply: false
+---
+
+# 3D Gallery UX
+
+Before changing UI in `app/`:
+
+1. Read `docs/ux-principles.md` and `docs/ui-patterns.md`.
+2. **Responsive:** mobile-first; sanity-check **320px**, **390px**, and **1280px**; no horizontal scroll at 320px unless intentional (e.g. canvas).
+3. **Controls:** set explicit `color` on buttons/inputs with white/light backgrounds (dark `color-scheme` can hide labels).
+4. **A11y:** target **WCAG 2.2 AA**; visible focus; touch targets ~44px where feasible; meaningful names for icon-only controls.
+5. **3D / motion:** respect `prefers-reduced-motion` (reduce camera autoplay, parallax, and heavy transitions); offer keyboard paths for gallery navigation where possible; do not rely on color alone for selection state.
+6. **Copy:** use repo **ux-writing** skill for user-facing strings.
+
+For audits, use **accessibility-audit** or **design-critique** skills.
