@@ -8,7 +8,7 @@
 
 | Branch | Purpose |
 |--------|---------|
-| `main` | Live demo. Deploys to GitHub Pages. Only changes via merged PRs. |
+| `main` | Live app. Deploys to GitHub Pages. Only changes via merged PRs. |
 | `feat/feat-XX-<name>` | One branch per FEAT (see [FEATURES.md](../FEATURES.md#status)) |
 | `docs/<topic>` | Docs-only changes (PRD, flows, features) |
 | `fix/<topic>` | Small bug fixes |
@@ -18,7 +18,7 @@ Always branch from an up-to-date `main`:
 ```bash
 git switch main
 git pull
-git switch -c feat/feat-01-desktop-movement
+git switch -c feat/feat-01-measured-room
 ```
 
 ## Checks
@@ -28,14 +28,16 @@ git switch -c feat/feat-01-desktop-movement
 | **PR check** (GitHub Actions) | Every PR into `main` | `npm ci`, `npm run lint`, `npm run typecheck`, `npm run build` in `app/` |
 | **Deploy** (GitHub Actions) | Push to `main` only | Build `app/` → publish `app/dist` to GitHub Pages |
 
-Added in FEAT-00. Feature branches never deploy, so they can't overwrite the live site.
+Added in FEAT-00. Feature branches never deploy, so they can't overwrite the live site. To test a branch on your phone, use the dev server's network URL (below).
+
+**One-time GitHub setup:** **Settings → Pages → Build and deployment → Source: GitHub Actions**. Live site: `https://alexcat617.github.io/3d-gallery/`.
 
 ## Merge checklist (per FEAT)
 
 1. PR check is green.
 2. Every node in the FEAT flow map clicked through, including error paths.
 3. Acceptance criteria in `features/FEAT-XX-*.md` pass.
-4. 320 / 390 / 1280 px checked; reduced motion checked; real phone checked for movement, touch, or asset changes.
+4. 320 / 390 / 1280 px checked; reduced motion checked; real phone checked for anything the venue owner sees.
 5. Earlier FEATs still work (quick regression click-through).
 6. FEAT status + Changelog updated in [FEATURES.md](../FEATURES.md).
 
@@ -46,6 +48,8 @@ Added in FEAT-00. Feature branches never deploy, so they can't overwrite the liv
 - Require a pull request before merging.
 - Require status checks to pass → select the PR check (after FEAT-00 adds it).
 - Block force pushes.
+
+(Works on a free account because the repo is public.)
 
 ## Run the app
 
@@ -61,4 +65,4 @@ The dev server starts in `low` quality to keep the laptop responsive. Add `?qual
 
 **Test on your phone:** with phone and laptop on the same Wi-Fi, open the **Network** URL that `npm run dev` prints (e.g. `http://192.168.1.20:5173`). If Windows asks about the firewall, allow private networks.
 
-Do not commit `.env` files, API keys, or raw capture footage.
+Do not commit `.env` files, API keys, raw capture footage, or original full-resolution venue photos.
