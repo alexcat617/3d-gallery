@@ -53,6 +53,28 @@
       "depthIn": 24
     }
   ],
-  "placements": [],
+  "placements": [
+    {
+      "artworkId": "harbor-dusk",
+      "wallId": "north-wall",
+      "centerFromLeftIn": 120
+    },
+    {
+      "artworkId": "green-study",
+      "wallId": "west-wall",
+      "centerFromLeftIn": 40
+    },
+    {
+      "artworkId": "vine-study",
+      "wallId": "east-wall",
+      "centerFromLeftIn": 120
+    },
+    {
+      "artworkId": "overlap-test",
+      "wallId": "west-wall",
+      "centerFromLeftIn": 104,
+      "centerFromFloorIn": 54
+    }
+  ],
   "viewpoints": []
 }

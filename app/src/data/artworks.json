@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": "harbor-dusk",
+    "title": "Harbor Dusk",
+    "medium": "Oil on canvas",
+    "widthIn": 24,
+    "heightIn": 36,
+    "depthIn": 1.5,
+    "image": "art/harbor-dusk.svg"
+  },
+  {
+    "id": "green-study",
+    "title": "Green Study",
+    "medium": "Framed print",
+    "widthIn": 18,
+    "heightIn": 24,
+    "depthIn": 1.5,
+    "frame": { "color": "#2a2a2a", "widthIn": 2 },
+    "image": "art/green-18x24.svg"
+  },
+  {
+    "id": "vine-study",
+    "title": "Vine Study",
+    "medium": "Ink",
+    "widthIn": 20,
+    "heightIn": 20,
+    "image": "art/vine-study.svg"
+  },
+  {
+    "id": "overlap-test",
+    "title": "Window overlap demo",
+    "medium": "Test",
+    "widthIn": 48,
+    "heightIn": 36,
+    "image": "art/overlap-test.svg"
+  }
+]

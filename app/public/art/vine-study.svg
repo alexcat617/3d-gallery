@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#e8f0e4"/>
+  <circle cx="100" cy="100" r="40" fill="#3d6b4f"/>
+  <text x="48" y="108" font-size="14" fill="#1a1a1a">wrong ratio on purpose</text>
+</svg>

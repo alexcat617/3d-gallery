@@ -1,11 +1,12 @@
 import './style.css';
 import { Box3, Vector3 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { artworksForVenue, hasVenue, loadVenue, site } from './data';
+import { artworks, artworksForVenue, hasVenue, loadVenue, site } from './data';
 import { LoadTracker } from './lib/load-tracker';
 import { pickQuality } from './lib/quality';
 import { parseRoute } from './lib/route';
 import { supportsWebGL2 } from './lib/webgl';
+import { addArtworkMeshes } from './scene/artwork-meshes';
 import { createMeasuredRoom } from './scene/measured-room';
 import { initialView, type RoomView } from './scene/placeholder-room';
 import { Viewer } from './scene/viewer';
@@ -66,6 +67,12 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
       manager: tracker.manager,
       debug: debugMode,
       showLabels: debugMode,
+    });
+
+    await addArtworkMeshes(group, loaded, artworks, {
+      manager: tracker.manager,
+      quality,
+      validationMessages,
     });
 
     for (const msg of validationMessages) {
