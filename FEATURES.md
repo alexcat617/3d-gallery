@@ -24,7 +24,7 @@ Work item shape: Persona lens → User stories → Requirements → Acceptance c
 | ID | Feature | Wave | Status | Flows | Branch |
 |----|---------|------|--------|-------|--------|
 | [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `building` | FLOW-00, 03 | `feat/feat-00-foundation` |
-| [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `ready` | FLOW-04 | `feat/feat-01-measured-room` |
+| [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `building` | FLOW-04 | `feat/feat-01-measured-room` |
 | [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `ready` | FLOW-04 | `feat/feat-02-artwork-to-scale` |
 | [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `ready` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
 | [FEAT-04](./features/FEAT-04-artwork-card.md) | Artwork info card + list view | B | `ready` | FLOW-02, 03 | `feat/feat-04-artwork-card` |
@@ -91,6 +91,10 @@ Don't commit or push unless asked.
 
 | Date | Change |
 |------|--------|
+| 2026-11-06 | **FEAT-01 measured room (WIP):** `createMeasuredRoom` — textured walls, openings, soffits, fixtures, sloped wall tops, `?debug` labels + keep-clear + validation UI; `?orbit=1` dev camera; `venues/_template.json`; sample venue exercises aspect + opening checks |
+| 2026-11-06 | Venues **Stalk** and **Topolino**: `stalk` / `topolino` venue JSON stubs, `docs/venues/README.md` index; Stalk reference images in `captures/stalk/` (private) |
+| 2026-11-06 | **Stalk:** `ceilingIn` 144 (~12 ft); wall labels in `stalk.json` for art plan (1 on short/slanted wall, up to 2 on ~40′ bench wall); details in [docs/venues/README.md](./docs/venues/README.md) |
+| 2026-11-06 | Stalk: two exterior reference photos of slanted wall added to private `captures/stalk/`; filenames listed in `docs/venues/README.md` |
 | 2026-11-02 | Project docs scaffolded from discovery brief: CONCEPT, PERSONAS, PRD, FLOWS, FEATURES, FEAT-00…06, build contract |
 | 2026-11-02 | Cloud-first hardware constraints: PRD §6.1, low-quality dev default, real-phone testing in contract |
 | 2026-11-02 | **Pivot to venue pitch tool:** artist shows work in a restaurant's own space at true scale. New personas (artist / venue owner), flows, FEAT-00…07, venue capture guide; free-walk and wayfinding features removed |

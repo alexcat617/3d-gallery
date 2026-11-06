@@ -1,7 +1,7 @@
 {
   "id": "sample-room",
   "name": "Sample Room",
-  "ceilingIn": 120,
+  "ceilingIn": 122,
   "corners": [
     { "xIn": 0, "zIn": 0 },
     { "xIn": 240, "zIn": 0 },
@@ -9,11 +9,49 @@
     { "xIn": 0, "zIn": 180 }
   ],
   "wallColor": "#e9e4dc",
+  "hang": {
+    "clearanceIn": 10,
+    "minCenterIn": 57,
+    "topMarginIn": 6
+  },
   "walls": [
-    { "id": "north-wall", "label": "North wall" },
-    { "id": "east-wall", "label": "East wall" },
-    { "id": "south-wall", "label": "South wall" },
-    { "id": "west-wall", "label": "West wall" }
+    {
+      "id": "north-wall",
+      "label": "North wall"
+    },
+    {
+      "id": "east-wall",
+      "label": "East wall (photo aspect test)",
+      "photo": "venues/sample-room/wall-east.svg",
+      "estimated": ["widthIn"]
+    },
+    {
+      "id": "south-wall",
+      "label": "South wall (bar + soffit)",
+      "heightLeftIn": 120,
+      "heightRightIn": 120,
+      "soffits": [{ "fromLeftIn": 60, "widthIn": 144, "dropIn": 18 }]
+    },
+    {
+      "id": "west-wall",
+      "label": "West wall (window + keep-clear)",
+      "wainscotIn": 36,
+      "furnitureTopIn": 44,
+      "openings": [
+        { "kind": "window", "fromLeftIn": 80, "fromFloorIn": 36, "widthIn": 48, "heightIn": 36 }
+      ]
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "sample-bar",
+      "label": "Bar",
+      "wallId": "south-wall",
+      "fromLeftIn": 60,
+      "widthIn": 168,
+      "heightIn": 42,
+      "depthIn": 24
+    }
   ],
   "placements": [],
   "viewpoints": []

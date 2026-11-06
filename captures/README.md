@@ -4,6 +4,8 @@ Drop raw venue material here, one folder per venue:
 
 ```text
 captures/
+  stalk/                ← restaurant #1 (example)
+  topolino/             ← restaurant #2 (example)
   corner-bistro/
     sketch.jpg          ← photo of your hand-drawn plan with rough measurements
     bar-wall-1.jpg      ← straight-on wall photos

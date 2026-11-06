@@ -1,4 +1,12 @@
-import { Mesh, type Object3D, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
+import {
+  Mesh,
+  type Material,
+  type Object3D,
+  PerspectiveCamera,
+  Scene,
+  Sprite,
+  WebGLRenderer,
+} from 'three';
 import { QUALITY_SETTINGS, type Quality } from '../lib/quality';
 import type { RoomView } from './placeholder-room';
 
@@ -9,7 +17,7 @@ import type { RoomView } from './placeholder-room';
 export class Viewer {
   readonly scene = new Scene();
   readonly camera = new PerspectiveCamera(60, 1, 0.05, 100);
-  private readonly renderer: WebGLRenderer;
+  readonly renderer: WebGLRenderer;
   private readonly resizeObserver: ResizeObserver;
   private room: Object3D | undefined;
 
@@ -75,14 +83,18 @@ export class Viewer {
 
 function disposeTree(root: Object3D): void {
   const geometries = new Set<{ dispose(): void }>();
-  const materials = new Set<{ dispose(): void }>();
+  const materials = new Set<Material>();
   root.traverse((node) => {
-    if (node instanceof Mesh) {
+    if (node instanceof Mesh || node instanceof Sprite) {
       geometries.add(node.geometry);
       const list = Array.isArray(node.material) ? node.material : [node.material];
       list.forEach((material) => materials.add(material));
     }
   });
   geometries.forEach((geometry) => geometry.dispose());
-  materials.forEach((material) => material.dispose());
+  materials.forEach((material) => {
+    const map = 'map' in material ? (material as { map?: { dispose(): void } }).map : undefined;
+    map?.dispose();
+    material.dispose();
+  });
 }
