@@ -1,0 +1,34 @@
+{
+  "_comment": "Copy to <venue-id>.json. Underscore keys are notes only — remove before shipping.",
+  "id": "corner-bistro",
+  "name": "Corner Bistro",
+  "ceilingIn": 120,
+  "corners": [
+    { "xIn": 0, "zIn": 0 },
+    { "xIn": 240, "zIn": 0 },
+    { "xIn": 240, "zIn": 180 },
+    { "xIn": 0, "zIn": 180 }
+  ],
+  "wallColor": "#e9e4dc",
+  "hang": {
+    "clearanceIn": 10,
+    "minCenterIn": 57,
+    "topMarginIn": 6
+  },
+  "walls": [
+    {
+      "id": "north-wall",
+      "label": "North wall (bar)",
+      "photo": "venues/corner-bistro/north-wall.webp",
+      "wainscotIn": 36,
+      "furnitureTopIn": 44,
+      "openings": [
+        { "kind": "door", "fromLeftIn": 0, "fromFloorIn": 0, "widthIn": 36, "heightIn": 80 }
+      ],
+      "estimated": []
+    }
+  ],
+  "fixtures": [],
+  "placements": [],
+  "viewpoints": []
+}

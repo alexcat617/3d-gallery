@@ -78,6 +78,8 @@ Estimates are most accurate when the reference is **on the same wall surface** a
 
 Put everything in `captures/<venue-id>/` in the project (for example `captures/corner-bistro/`). That folder is **private**: git ignores it, so raw photos never reach GitHub. See [captures/README.md](../captures/README.md).
 
+Tracked list of venue ids in use (Stalk, Topolino, links): [docs/venues/README.md](./venues/README.md).
+
 Then ask the agent:
 
 ```text

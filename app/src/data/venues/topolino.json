@@ -1,0 +1,20 @@
+{
+  "id": "topolino",
+  "name": "Topolino",
+  "ceilingIn": 120,
+  "corners": [
+    { "xIn": 0, "zIn": 0 },
+    { "xIn": 240, "zIn": 0 },
+    { "xIn": 240, "zIn": 180 },
+    { "xIn": 0, "zIn": 180 }
+  ],
+  "wallColor": "#e9e4dc",
+  "walls": [
+    { "id": "south-wall", "label": "South wall (placeholder)" },
+    { "id": "east-wall", "label": "East wall (placeholder)" },
+    { "id": "north-wall", "label": "North wall (placeholder)" },
+    { "id": "west-wall", "label": "West wall (placeholder)" }
+  ],
+  "placements": [],
+  "viewpoints": []
+}

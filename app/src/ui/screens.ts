@@ -22,6 +22,10 @@ export interface RoomChromeOptions {
   /** Return focus to "All Pieces" when coming back from the list. */
   focusAllPieces?: boolean;
   onAllPieces: () => void;
+  /** Dev-only: short line about ?debug / orbit. */
+  devModeBanner?: string;
+  /** Dev-only: validation messages (dev console + on-screen list). */
+  devValidationMessages?: string[];
 }
 
 /**
@@ -159,7 +163,14 @@ export class Screens {
     );
   }
 
-  showRoom({ venueName, artistName, focusAllPieces, onAllPieces }: RoomChromeOptions): void {
+  showRoom({
+    venueName,
+    artistName,
+    focusAllPieces,
+    onAllPieces,
+    devModeBanner,
+    devValidationMessages,
+  }: RoomChromeOptions): void {
     this.reset();
     this.stage.removeAttribute('aria-hidden');
     const allPieces = el(
@@ -167,6 +178,18 @@ export class Screens {
       { type: 'button', class: 'button button--secondary', onClick: onAllPieces },
       'All Pieces',
     );
+    const devBanner =
+      devModeBanner &&
+      el('p', { class: 'dev-banner', role: 'status' }, devModeBanner);
+    const devList =
+      devValidationMessages &&
+      devValidationMessages.length > 0 &&
+      el(
+        'aside',
+        { class: 'dev-validation', 'aria-label': 'Venue validation messages' },
+        el('p', { class: 'dev-validation__title' }, 'Check (dev)'),
+        el('ul', {}, ...devValidationMessages.map((msg) => el('li', {}, msg))),
+      );
     this.root.append(
       el(
         'header',
@@ -179,6 +202,8 @@ export class Screens {
         ),
         allPieces,
       ),
+      ...(devBanner ? [devBanner] : []),
+      ...(devList ? [devList] : []),
     );
     if (focusAllPieces) allPieces.focus();
   }
