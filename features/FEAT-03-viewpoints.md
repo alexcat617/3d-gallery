@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-03 |
 | Wave | B |
-| Status | `building` |
+| Status | `done` |
 | Flows | [FLOW-00](../FLOWS.md#flow-00-owner-opens-the-pitch-p2) steps 4–5, [FLOW-01](../FLOWS.md#flow-01-owner-looks-around-p2) |
 | Depends on | FEAT-01, FEAT-02 |
 | Blocks | FEAT-04, FEAT-05 (save viewpoint) |
@@ -36,7 +36,7 @@ The owner taps through a few named views of their room ("Bar wall", "Booths") an
 | REQ-03-05 | Drag to look: yaw ±35°, pitch ±15° from the viewpoint; eases back on release; no zoom/walk | FLOW-01 step 3 |
 | REQ-03-06 | One-time hint, dismissed on first interaction | FLOW-00 step 5; shared rule 1 |
 | REQ-03-07 | Camera eye height per viewpoint: default 63 in (standing); `eyeHeightIn: 48` for **seated** views ("From the booths") so the owner sees what diners see. Field of view tuned so a typical wall fits on a phone in portrait | PRD § Hang height |
-| REQ-03-08 | Fallback when a venue has no viewpoints: auto-generate one per wall that has art (centered, facing the wall) | Shared rule 6 |
+| REQ-03-08 | Fallback when a venue has no viewpoints: auto-generate one per wall that has art — camera faces the art center but stands back enough that the piece plus surrounding wall read in context (~36% of vertical FOV for height; scales with artwork size) | Shared rule 6 |
 | REQ-03-09 | Default pitch uses viewpoints + limited drag; **`?orbit=1`** skips intro for dev-only full orbit | — |
 | REQ-03-10 | **Explore room** (owner): optional full drag orbit to sense the whole space; **Back to guided views** returns to the same viewpoint in the tour; Esc also exits explore | — |
 

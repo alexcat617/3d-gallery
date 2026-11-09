@@ -1,6 +1,7 @@
 {
   "id": "stalk",
   "name": "Stalk",
+  "shareImage": "art/abstract-48x41.png",
   "ceilingIn": 144,
   "corners": [
     { "xIn": 0, "zIn": 0 },
@@ -9,18 +10,38 @@
     { "xIn": 0, "zIn": 192 }
   ],
   "wallColor": "#e9e4dc",
+  "hang": {
+    "clearanceIn": 10,
+    "minCenterIn": 57,
+    "topMarginIn": 6
+  },
   "walls": [
     {
       "id": "bench-long-wall",
-      "label": "Bench + small tables (~40 ft) — plan: up to 2 artworks"
+      "label": "Bench + small tables (~40 ft) — plan: up to 2 artworks",
+      "furnitureTopIn": 44,
+      "estimated": ["furnitureTopIn"]
     },
     { "id": "east-wall", "label": "East wall (placeholder until notch outline)" },
     { "id": "north-wall", "label": "North wall (placeholder until notch outline)" },
     {
       "id": "short-wall-sketch",
-      "label": "Short wall (~16 ft on sketch; slanted in final plan) — plan: 1 artwork"
+      "label": "Short wall (~16 ft; slanted in final plan) — 1 artwork",
+      "wainscotIn": 36,
+      "estimated": ["wainscotIn"]
     }
   ],
-  "placements": [],
+  "placements": [
+    {
+      "artworkId": "abstract-48x41",
+      "wallId": "short-wall-sketch",
+      "centerFromLeftIn": 96
+    },
+    {
+      "artworkId": "harbor-dusk",
+      "wallId": "bench-long-wall",
+      "centerFromLeftIn": 240
+    }
+  ],
   "viewpoints": []
 }

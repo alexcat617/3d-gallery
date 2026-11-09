@@ -34,7 +34,7 @@ Implemented in FEAT-00 (`app/index.html`, `app/src/style.css`, `app/src/ui/scree
 - Errors: full-screen message, **Try again** (primary), **See pieces as a list** (secondary, when venue data loaded).
 - No WebGL2: list view with a note, no 3D.
 - Test hooks: `?simulate=no-webgl`, `?simulate=load-error` (first attempt fails, retry succeeds), `?quality=low|medium|high`.
-- **Owner navigation (FEAT-03):** Canvas drag = limited look (yaw ±35°, pitch ±15°, eases back). Horizontal swipe = next/prev view. ←/→ = prev/next. Bottom **viewpoint bar**: ‹ ›, center opens named list. **Explore room** (top bar) = full orbit; **Back to guided views** or Esc returns to the tour. Intro **Start** before first view; one dismissible hint. Dev-only full orbit without intro: `?orbit=1`.
+- **Owner navigation (FEAT-03):** Canvas drag = limited look (yaw ±35°, pitch ±15°, eases back). Horizontal swipe = next/prev view. ←/→ = prev/next. Bottom **viewpoint bar**: ‹ ›, center opens named list. **Explore room** (top bar) = full orbit; **Back to guided views** or Esc returns to the tour. Intro **Start** before first view; one dismissible hint. Dev-only full orbit without intro: `?orbit=1`. **Auto viewpoints** (empty `viewpoints[]`) step back based on how large the art is so owners see the piece in the room, not a tight crop — override with saved viewpoints from arrange.
 
 ### Overlays & detail
 

@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-06 |
 | Wave | D |
-| Status | `draft` |
+| Status | `building` |
 | Flows | [FLOW-00](../FLOWS.md#flow-00-owner-opens-the-pitch-p2), [FLOW-04](../FLOWS.md#flow-04-artist-prepares-a-venue-p1) step 2 |
 | Depends on | FEAT-01…05; a processed scan per [ASSET-PIPELINE](../docs/ASSET-PIPELINE.md) |
 | Primary persona | Both |

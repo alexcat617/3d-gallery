@@ -30,5 +30,12 @@
   ],
   "fixtures": [],
   "placements": [],
-  "viewpoints": []
+  "viewpoints": [],
+  "_scanExample": {
+    "url": "https://cdn.example/stalk-scan-v1.spz",
+    "format": "spz",
+    "scale": 1,
+    "rotation": [0, 0, 0],
+    "offset": { "xIn": 0, "yIn": 0, "zIn": 0 }
+  }
 }

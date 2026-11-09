@@ -92,11 +92,22 @@ export interface Viewpoint {
   eyeHeightIn?: number;
 }
 
+/** Gaussian splat scan hosted outside git (FEAT-06, REQ-06-02). */
+export interface VenueScan {
+  url: string;
+  format?: 'spz' | 'ply';
+  scale?: number;
+  rotation?: [number, number, number];
+  offset?: Point3;
+}
+
 export interface Venue {
   id: string;
   name: string;
   /** Optional link-preview image under `public/` (FEAT-07). */
   shareImage?: string;
+  /** When set and load succeeds, show scan instead of textured measured walls (FEAT-06). */
+  scan?: VenueScan;
   ceilingIn: number;
   /** Floor outline, clockwise from the entrance. Wall i runs corners[i] → corners[i + 1]. */
   corners: Point2[];
