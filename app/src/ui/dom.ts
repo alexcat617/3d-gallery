@@ -10,8 +10,9 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(attrs)) {
-    if (key === 'onClick' && typeof value === 'function') {
-      node.addEventListener('click', value as (event: Event) => void);
+    if (key.startsWith('on') && typeof value === 'function') {
+      const eventName = key.slice(2).toLowerCase();
+      node.addEventListener(eventName, value as (event: Event) => void);
     } else if (value === true) {
       node.setAttribute(key, '');
     } else if (value !== false && value !== undefined) {

@@ -28,7 +28,7 @@ Work item shape: Persona lens → User stories → Requirements → Acceptance c
 | [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `building` | FLOW-04 | `feat/feat-02-artwork-to-scale` |
 | [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `building` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
 | [FEAT-04](./features/FEAT-04-artwork-card.md) | Artwork info card + list view | B | `building` | FLOW-02, 03 | `feat/feat-04-artwork-card` |
-| [FEAT-05](./features/FEAT-05-arrange-mode.md) | Arrange mode (artist) | C | `ready` | FLOW-05 | `feat/feat-05-arrange-mode` |
+| [FEAT-05](./features/FEAT-05-arrange-mode.md) | Arrange mode (artist) | C | `building` | FLOW-05 | `feat/feat-05-arrange-mode` |
 | [FEAT-06](./features/FEAT-06-scanned-room.md) | Scanned room (realism) | D | `draft` (needs D-07) | FLOW-00, 04 | `feat/feat-06-scanned-room` |
 | [FEAT-07](./features/FEAT-07-share-performance.md) | Share links + performance | D | `ready` | FLOW-00 | `feat/feat-07-share-performance` |
 
@@ -92,6 +92,7 @@ Don't commit or push unless asked.
 | Date | Change |
 |------|--------|
 | 2026-11-06 | **FEAT-01 measured room (WIP):** `createMeasuredRoom` — textured walls, openings, soffits, fixtures, sloped wall tops, `?debug` labels + keep-clear + validation UI; `?orbit=1` dev camera; `venues/_template.json`; sample venue exercises aspect + opening checks |
+| 2026-11-09 | **FEAT-05 (WIP):** Dev `?arrange` side panel — wall pick, tap-to-place at recommended height, drag/nudge, snap center, validation + keep-clear override, save viewpoints, Save → venue JSON API, preview as owner |
 | 2026-11-09 | **FEAT-04 (WIP):** Tap/click art → orange outline + dialog card (title, medium, size); hidden focus targets for keyboard; list “Show on wall” jumps viewpoint + outline; explore mode tap pick |
 | 2026-11-09 | **FEAT-03 (WIP):** Intro + Start; viewpoint bar (prev/next, named list); glide navigation, drag-to-look limits, swipe; auto viewpoints per art wall; `?orbit=1` dev-only |
 | 2026-11-06 | **FEAT-02 (WIP):** Artwork boxes at true scale from `artworks.json` + `placements[]`; shared `hang-height` helper; dev validation (overlap window/other art, keep-clear, top margin, aspect, resolution); sample pieces in `public/art/` |

@@ -18,6 +18,7 @@ import { ViewpointNavigation } from './scene/viewpoint-navigation';
 import { Viewer } from './scene/viewer';
 import type { Artwork, Venue, Viewpoint } from './types';
 import type { PitchChromeHandle } from './ui/screens';
+import { ArrangeSession } from './arrange/arrange-session';
 import { Screens } from './ui/screens';
 
 /** `?simulate=no-webgl` or `?simulate=load-error` exercise the fallback paths on any device. */
@@ -27,10 +28,12 @@ const params = new URLSearchParams(window.location.search);
 const simulate = parseSimulation(params.get('simulate'));
 const quality = pickQuality(params);
 const debugMode = params.has('debug');
-const orbitEnabled = params.get('orbit') === '1';
+const arrangeMode = import.meta.env.DEV && params.has('arrange');
+const orbitEnabled = params.get('orbit') === '1' && !arrangeMode;
 
 const stage = requireElement('#stage');
-const screens = new Screens(requireElement('#ui'), stage);
+const uiRoot = requireElement('#ui');
+const screens = new Screens(uiRoot, stage);
 let viewer: Viewer | undefined;
 let controls: OrbitControls | undefined;
 let viewpointNav: ViewpointNavigation | undefined;
@@ -43,6 +46,7 @@ let exploreEscapeHandler: ((event: KeyboardEvent) => void) | undefined;
 let disposeExploreArtPick: (() => void) | undefined;
 let pitchCtx: PitchContext | undefined;
 const artworkOutline = new ArtworkOutline();
+let arrangeSession: ArrangeSession | undefined;
 
 interface PitchContext {
   venue: Venue;
@@ -87,7 +91,7 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
 
     const { group, validationMessages } = await createMeasuredRoom(loaded, {
       manager: tracker.manager,
-      debug: debugMode,
+      debug: debugMode || arrangeMode,
       showLabels: debugMode,
     });
 
@@ -113,6 +117,41 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
     teardownOrbit();
     teardownViewpoints();
     exitExploreMode();
+
+    if (arrangeMode) {
+      screens.setProgress(1);
+      arrangeSession?.dispose();
+      teardownPitch();
+      document.title = `Arrange — ${loaded.name}`;
+      arrangeSession = new ArrangeSession({
+        viewer,
+        screens,
+        stage,
+        uiRoot,
+        venueId,
+        initialVenue: loaded,
+        initialRoom: group,
+        manager: tracker.manager,
+        quality,
+        onPreviewOwner: (draft) => {
+          arrangeSession = undefined;
+          const viewpoints = resolveViewpoints(draft);
+          const msgs: string[] = [];
+          pitchCtx = { venue: draft, viewpoints, validationMessages: msgs };
+          activeRoom = group;
+          if (viewpoints.length === 0) {
+            showRoom(draft, msgs);
+            return;
+          }
+          screens.showIntro({
+            venueName: draft.name,
+            artistName: site.artistName,
+            onStart: () => beginPitch({ venue: draft, viewpoints, validationMessages: msgs }),
+          });
+        },
+      });
+      return;
+    }
 
     if (orbitEnabled) {
       setupOrbit(previewView, group);
