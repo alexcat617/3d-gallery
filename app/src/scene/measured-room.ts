@@ -54,6 +54,7 @@ export interface RoomBuildResult {
 /**
  * Full measured room: textured walls when `photo` is set, openings, optional
  * soffits, fixtures, keep-clear debug shade, and optional dimension sprites.
+ * Floor + walls only (open top); `ceilingIn` sets wall height, not a cap mesh.
  */
 export async function createMeasuredRoom(
   venue: Venue,
@@ -174,15 +175,6 @@ export async function createMeasuredRoom(
   floor.name = 'floor';
   floor.rotation.x = -Math.PI / 2;
   room.add(floor);
-
-  const ceiling = new Mesh(
-    floorGeometry.clone(),
-    new MeshStandardMaterial({ color: '#f4f2ee', roughness: 1, side: DoubleSide }),
-  );
-  ceiling.name = 'ceiling';
-  ceiling.rotation.x = -Math.PI / 2;
-  ceiling.position.y = inToM(ceilingDefault);
-  room.add(ceiling);
 
   if (venue.fixtures) {
     for (const fx of venue.fixtures) {

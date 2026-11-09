@@ -76,8 +76,17 @@ export async function addArtworkMeshes(
     centerYIn = fit.centerYIn;
     for (const msg of fit.messages) options.validationMessages.push(msg);
 
-    const texture = await loadArtTexture(loader, art.image);
-    checkArtTexture(art, texture, options.quality, options.validationMessages);
+    let texture: Texture | undefined;
+    try {
+      texture = await loadArtTexture(loader, art.image);
+      checkArtTexture(art, texture, options.quality, options.validationMessages);
+    } catch (e) {
+      const url = resolveAssetUrl(art.image);
+      console.warn(`Artwork "${art.id}": failed to load image ${url}`, e);
+      options.validationMessages.push(
+        `Artwork "${art.title}" (${art.id}): image failed to load — using placeholder color.`,
+      );
+    }
 
     const artworkRoot = buildArtworkGroup(art, texture, outerWIn, outerHIn, depthIn);
     positionArtworkGroup(artworkRoot, placement.centerFromLeftIn, centerYIn, seg, depthIn);
@@ -207,7 +216,13 @@ function rectsOverlap(a: Rect, b: Rect): boolean {
   return a.left < b.right && a.right > b.left && a.bottom < b.top && a.top > b.bottom;
 }
 
-function buildArtworkGroup(art: Artwork, texture: Texture, outerWIn: number, outerHIn: number, depthIn: number): Group {
+function buildArtworkGroup(
+  art: Artwork,
+  texture: Texture | undefined,
+  outerWIn: number,
+  outerHIn: number,
+  depthIn: number,
+): Group {
   const g = new Group();
   g.name = `artwork-${art.id}`;
 
@@ -224,22 +239,24 @@ function buildArtworkGroup(art: Artwork, texture: Texture, outerWIn: number, out
     const totalW = innerW + 2 * frameWIn;
     const totalH = innerH + 2 * frameWIn;
 
-    const frontTex = texture.clone();
-    frontTex.colorSpace = LinearSRGBColorSpace;
-    frontTex.minFilter = LinearFilter;
-    frontTex.magFilter = LinearFilter;
-    frontTex.flipY = false;
+    const frontTex = texture?.clone();
     const uR = innerW / totalW;
     const vR = innerH / totalH;
     const uO = frameWIn / totalW;
     const vO = frameWIn / totalH;
-    frontTex.repeat.set(uR, vR);
-    frontTex.offset.set(uO, vO);
-    frontTex.needsUpdate = true;
+    if (frontTex) {
+      frontTex.colorSpace = LinearSRGBColorSpace;
+      frontTex.minFilter = LinearFilter;
+      frontTex.magFilter = LinearFilter;
+      frontTex.flipY = false;
+      frontTex.repeat.set(uR, vR);
+      frontTex.offset.set(uO, vO);
+      frontTex.needsUpdate = true;
+    }
 
     const matSides = new MeshStandardMaterial({ color: frameColor, roughness: 0.85, metalness: 0 });
     const matFront = new MeshStandardMaterial({
-      map: frontTex,
+      ...(frontTex ? { map: frontTex } : { color: new Color('#8a9a8e') }),
       roughness: 0.88,
       metalness: 0,
       side: DoubleSide,
@@ -249,7 +266,7 @@ function buildArtworkGroup(art: Artwork, texture: Texture, outerWIn: number, out
     g.add(mesh);
   } else {
     const mat = new MeshStandardMaterial({
-      map: texture,
+      ...(texture ? { map: texture } : { color: new Color('#6a7a9a') }),
       roughness: 0.88,
       metalness: 0,
       side: DoubleSide,
