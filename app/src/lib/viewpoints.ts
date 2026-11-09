@@ -31,7 +31,7 @@ function autoViewpointsForArtWalls(venue: Venue): Viewpoint[] {
     if (!wallsWithArt.has(wall.id)) return;
     const start = venue.corners[wi]!;
     const end = venue.corners[(wi + 1) % n]!;
-    const vp = viewpointFacingWall(wall.id, wall.label, start, end, centroid);
+    const vp = viewpointFacingWall(wall.id, wall.label, start, end, centroid, venue);
     views.push(vp);
     if (wall.furnitureTopIn !== undefined && wall.furnitureTopIn > 0) {
       views.push(
@@ -41,6 +41,7 @@ function autoViewpointsForArtWalls(venue: Venue): Viewpoint[] {
           start,
           end,
           centroid,
+          venue,
           SEATED_EYE_IN,
         ),
       );
@@ -56,12 +57,20 @@ function viewpointFacingWall(
   start: { xIn: number; zIn: number },
   end: { xIn: number; zIn: number },
   centroid: ReturnType<typeof polygonCentroid>,
+  venue: Venue,
   eyeIn = DEFAULT_EYE_HEIGHT_IN,
 ): Viewpoint {
-  const midXIn = (start.xIn + end.xIn) / 2;
-  const midZIn = (start.zIn + end.zIn) / 2;
-  const inwardX = centroid.x - midXIn;
-  const inwardZ = centroid.y - midZIn;
+  const wallId = id.replace(/-seated$/, '');
+  const wallLenIn =
+    Math.hypot(end.xIn - start.xIn, end.zIn - start.zIn) || 1;
+  const focal = artFocalOnWall(wallId, venue, wallLenIn, eyeIn);
+
+  const t = Math.max(0, Math.min(1, focal.alongIn / wallLenIn));
+  const targetXIn = start.xIn + (end.xIn - start.xIn) * t;
+  const targetZIn = start.zIn + (end.zIn - start.zIn) * t;
+
+  const inwardX = centroid.x - targetXIn;
+  const inwardZ = centroid.y - targetZIn;
   const inwardLen = Math.hypot(inwardX, inwardZ) || 1;
   const ux = inwardX / inwardLen;
   const uz = inwardZ / inwardLen;
@@ -70,10 +79,37 @@ function viewpointFacingWall(
   return {
     id,
     label: shortLabel(label),
-    position: { xIn: midXIn + ux * standoff, yIn: eyeIn, zIn: midZIn + uz * standoff },
-    lookAt: { xIn: midXIn, yIn: eyeIn, zIn: midZIn },
+    position: {
+      xIn: targetXIn + ux * standoff,
+      yIn: eyeIn,
+      zIn: targetZIn + uz * standoff,
+    },
+    lookAt: { xIn: targetXIn, yIn: focal.lookYIn, zIn: targetZIn },
     eyeHeightIn: eyeIn,
   };
+}
+
+/** Center auto views on hung art instead of the geometric wall midpoint. */
+function artFocalOnWall(
+  wallId: string,
+  venue: Venue,
+  wallLenIn: number,
+  eyeIn: number,
+): { alongIn: number; lookYIn: number } {
+  const onWall = venue.placements.filter((p) => p.wallId === wallId);
+  if (onWall.length === 0) {
+    return { alongIn: wallLenIn / 2, lookYIn: eyeIn };
+  }
+  const alongIn =
+    onWall.reduce((sum, p) => sum + p.centerFromLeftIn, 0) / onWall.length;
+  const heights = onWall
+    .map((p) => p.centerFromFloorIn)
+    .filter((y): y is number => y !== undefined);
+  const lookYIn =
+    heights.length > 0
+      ? heights.reduce((a, b) => a + b, 0) / heights.length
+      : eyeIn;
+  return { alongIn, lookYIn };
 }
 
 function shortLabel(label: string): string {

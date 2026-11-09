@@ -483,6 +483,104 @@ body {
   color: var(--color-text-muted);
 }
 
+.piece__show {
+  margin-top: var(--space-2);
+}
+
+/* Artwork card (FEAT-04) */
+.art-card {
+  margin: auto;
+  max-width: min(24rem, calc(100% - var(--space-4) * 2));
+  width: 100%;
+  padding: var(--space-6) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  border-bottom-width: 1px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 0.12);
+}
+
+.art-card::backdrop {
+  background: rgb(31 31 31 / 0.35);
+}
+
+.art-card__title {
+  margin: 0 0 var(--space-2);
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.art-card__medium {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-muted);
+}
+
+.art-card__size {
+  margin: 0 0 var(--space-4);
+  font-weight: 600;
+}
+
+.art-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.art-card__close {
+  min-width: 6rem;
+}
+
+.art-focus-list {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.art-focus-list__btn {
+  min-height: var(--tap);
+  padding: var(--space-2);
+  font: inherit;
+  background: transparent;
+  border: none;
+}
+
+.art-focus-list__btn:focus,
+.art-focus-list__btn:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  clip: auto;
+  overflow: visible;
+  white-space: normal;
+}
+
+@media (min-width: 48rem) {
+  .art-card {
+    position: fixed;
+    right: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    max-height: min(80vh, 24rem);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .art-card {
+    margin-bottom: 0;
+    max-width: none;
+    width: calc(100% - var(--space-2) * 2);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

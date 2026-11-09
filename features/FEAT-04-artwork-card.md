@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-04 |
 | Wave | B |
-| Status | `ready` |
+| Status | `building` |
 | Flows | [FLOW-02](../FLOWS.md#flow-02-owner-checks-a-piece-p2), [FLOW-03](../FLOWS.md#flow-03-list-view-p2-fallback--shortcut) |
 | Depends on | FEAT-02, FEAT-03 |
 | Primary persona | **P2** Dana |
