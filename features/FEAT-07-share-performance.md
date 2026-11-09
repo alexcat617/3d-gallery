@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-07 |
 | Wave | D |
-| Status | `ready` |
+| Status | `building` |
 | Flows | [FLOW-00](../FLOWS.md#flow-00-owner-opens-the-pitch-p2) |
 | Depends on | FEAT-03, FEAT-04 (FEAT-06 for scan budgets) |
 | Primary persona | **P2** Dana |
