@@ -1,6 +1,7 @@
 {
   "id": "sample-room",
   "name": "Sample Room",
+  "shareImage": "art/harbor-dusk.svg",
   "ceilingIn": 122,
   "corners": [
     { "xIn": 0, "zIn": 0 },

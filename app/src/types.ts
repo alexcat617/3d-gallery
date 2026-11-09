@@ -2,6 +2,8 @@
 
 export interface Site {
   artistName: string;
+  /** Absolute origin for OG URLs, e.g. https://user.github.io/3d-gallery */
+  pagesOrigin: string;
 }
 
 export interface Frame {
@@ -93,6 +95,8 @@ export interface Viewpoint {
 export interface Venue {
   id: string;
   name: string;
+  /** Optional link-preview image under `public/` (FEAT-07). */
+  shareImage?: string;
   ceilingIn: number;
   /** Floor outline, clockwise from the entrance. Wall i runs corners[i] → corners[i + 1]. */
   corners: Point2[];

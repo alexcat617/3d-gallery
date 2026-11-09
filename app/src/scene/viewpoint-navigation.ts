@@ -1,4 +1,5 @@
 import { PerspectiveCamera, Vector3 } from 'three';
+import { isRenderPaused } from '../lib/render-schedule';
 import { viewpointToRoomView } from '../lib/viewpoints';
 import type { Viewpoint } from '../types';
 import type { RoomView } from './placeholder-room';
@@ -227,8 +228,10 @@ export class ViewpointNavigation {
         needsFrame = true;
       }
 
-      this.viewer.render();
+      if (!isRenderPaused()) this.viewer.render();
       if (needsFrame) {
+        this.raf = requestAnimationFrame(tick);
+      } else if (isRenderPaused() && (this.animating || this.easeBackStart > 0)) {
         this.raf = requestAnimationFrame(tick);
       }
     };

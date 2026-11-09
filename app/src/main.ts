@@ -4,7 +4,9 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { artworks, artworksForVenue, hasVenue, loadVenue, site } from './data';
 import { LoadTracker } from './lib/load-tracker';
 import { pickQuality } from './lib/quality';
+import { bindVisibilityPause, isRenderPaused } from './lib/render-schedule';
 import { parseRoute } from './lib/route';
+import { applyRuntimeShareMeta } from './lib/share-meta';
 import { viewpointIndexForArtwork } from './lib/viewpoint-for-art';
 import { resolveViewpoints, viewpointToRoomView } from './lib/viewpoints';
 import { supportsWebGL2 } from './lib/webgl';
@@ -18,6 +20,7 @@ import { ViewpointNavigation } from './scene/viewpoint-navigation';
 import { Viewer } from './scene/viewer';
 import type { Artwork, Venue, Viewpoint } from './types';
 import type { PitchChromeHandle } from './ui/screens';
+import { DevStatsOverlay } from './ui/dev-stats';
 import { Screens } from './ui/screens';
 
 /** `?simulate=no-webgl` or `?simulate=load-error` exercise the fallback paths on any device. */
@@ -43,6 +46,7 @@ let exploreEscapeHandler: ((event: KeyboardEvent) => void) | undefined;
 let disposeExploreArtPick: (() => void) | undefined;
 let pitchCtx: PitchContext | undefined;
 const artworkOutline = new ArtworkOutline();
+let devStats: DevStatsOverlay | undefined;
 
 interface PitchContext {
   venue: Venue;
@@ -51,6 +55,7 @@ interface PitchContext {
 }
 
 function start(): void {
+  bindVisibilityPause();
   document.documentElement.dataset.quality = quality;
   const route = parseRoute(window.location.pathname, import.meta.env.BASE_URL);
 
@@ -71,7 +76,8 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
 
   try {
     venue = await tracker.track(`venue:${venueId}`, loadVenue(venueId));
-    document.title = `Artwork by ${site.artistName} for ${venue.name}`;
+    applyRuntimeShareMeta(site, venue);
+    if (debugMode && !devStats) devStats = new DevStatsOverlay();
 
     if (simulate === 'no-webgl' || !supportsWebGL2()) {
       showList(venue, { unsupported: true });
@@ -372,8 +378,12 @@ function setupOrbit(view: RoomView, target: import('three').Object3D): void {
 
   const tick = () => {
     if (!controls) return;
+    if (isRenderPaused()) {
+      animationHandle = requestAnimationFrame(tick);
+      return;
+    }
     controls.update();
-    viewer!.render();
+    paintFrame();
     animationHandle = requestAnimationFrame(tick);
   };
   tick();
@@ -449,6 +459,11 @@ function showError(venueId: string, venue: Venue | undefined, attempt: number): 
 
 function parseSimulation(value: string | null): Simulation | null {
   return value === 'no-webgl' || value === 'load-error' ? value : null;
+}
+
+function paintFrame(): void {
+  viewer?.render();
+  devStats?.markFrame();
 }
 
 function requireElement(selector: string): HTMLElement {
