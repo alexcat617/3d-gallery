@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-05 |
 | Wave | C |
-| Status | `ready` |
+| Status | `building` |
 | Flows | [FLOW-05](../FLOWS.md#flow-05-artist-arranges-art-p1-arrange-mode) |
 | Depends on | FEAT-02, FEAT-03 |
 | Primary persona | **P1** Alex |
