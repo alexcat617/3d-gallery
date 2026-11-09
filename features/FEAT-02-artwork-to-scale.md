@@ -4,7 +4,7 @@
 |-------|-------|
 | ID | FEAT-02 |
 | Wave | A |
-| Status | `ready` |
+| Status | `building` |
 | Flows | [FLOW-04](../FLOWS.md#flow-04-artist-prepares-a-venue-p1) step 4 |
 | Depends on | FEAT-01 |
 | Blocks | FEAT-04, FEAT-05 |

@@ -24,8 +24,8 @@ export interface RoomView {
 }
 
 /**
- * Gray-box room from the venue outline: floor, ceiling, and flat walls at
- * `ceilingIn`. FEAT-01 replaces this with photo walls, openings, and soffits.
+ * Gray-box room from the venue outline: floor and flat walls at `ceilingIn`
+ * (open top). FEAT-01 replaces this with photo walls, openings, and soffits.
  */
 export function createPlaceholderRoom(venue: Venue): Group {
   if (venue.corners.length < 3) {
@@ -66,15 +66,6 @@ export function createPlaceholderRoom(venue: Venue): Group {
   floor.name = 'floor';
   floor.rotation.x = -Math.PI / 2;
   room.add(floor);
-
-  const ceiling = new Mesh(
-    floorGeometry,
-    new MeshStandardMaterial({ color: '#f4f2ee', roughness: 1, side: DoubleSide }),
-  );
-  ceiling.name = 'ceiling';
-  ceiling.rotation.x = -Math.PI / 2;
-  ceiling.position.y = height;
-  room.add(ceiling);
 
   room.add(new HemisphereLight('#ffffff', '#b0a89c', 1.6));
   const sun = new DirectionalLight('#ffffff', 1.2);

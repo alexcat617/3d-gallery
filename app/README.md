@@ -11,3 +11,9 @@ See repo [README](../README.md) and [FEATURES.md](../FEATURES.md).
 - **`?orbit=1`** — drag to orbit the camera (dev inspection). Combine with **`?debug`** as needed.
 
 Wall photos live under `public/` (e.g. `public/venues/<venue-id>/...`) and are referenced from venue JSON as `venues/...`.
+
+## Dev: artwork to scale (FEAT-02)
+
+- **Library:** `src/data/artworks.json` — `image` paths are under `public/` (e.g. `art/harbor-dusk.svg`).
+- **Placements:** `placements[]` in each venue JSON (`artworkId`, `wallId`, `centerFromLeftIn`, optional `centerFromFloorIn`).
+- **`?debug`** — validation list includes artwork warnings (overlap, keep-clear, bad aspect, oversized texture for quality tier).

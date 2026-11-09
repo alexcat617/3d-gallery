@@ -28,8 +28,8 @@ A venue's room is built in 3D from tape measurements: floor outline, ceiling hei
 
 | ID | Requirement | Trace |
 |----|-------------|-------|
-| REQ-01-01 | Build floor + walls + ceiling from `corners[]` (inches, clockwise) and `ceilingIn` | PRD §7 data model; D-05 |
-| REQ-01-01b | Wall heights: default `ceilingIn`; per-wall `heightIn` override; sloped walls via `heightLeftIn` / `heightRightIn`; `soffits[]` drawn as lowered sections (bulkheads/beams) at the top of the wall. Ceiling surfaces follow the wall tops; flat ceiling at `ceilingIn` where walls match | PRD § Data model; venue-to-venue and in-room variation |
+| REQ-01-01 | Build floor + walls from `corners[]` (inches, clockwise); `ceilingIn` sets default wall height (open top, no ceiling cap mesh) | PRD §7 data model; D-05 |
+| REQ-01-01b | Wall heights: default `ceilingIn`; per-wall `heightIn` override; sloped walls via `heightLeftIn` / `heightRightIn`; `soffits[]` drawn as lowered sections (bulkheads/beams) at the top of the wall | PRD § Data model; venue-to-venue and in-room variation |
 | REQ-01-02 | Walls get stable ids/labels from the venue file (`bar-wall`, `booth-wall`…) | FLOW-04 step 3 |
 | REQ-01-03 | Wall photo stretched to the wall's real width × height; plain color fallback (venue-level `wallColor`) if missing or failed | FLOW-04 step 2; shared rule 6 |
 | REQ-01-04 | Openings (doors, windows) per wall: `fromLeftIn`, `fromFloorIn`, `widthIn`, `heightIn`; drawn as darker insets | FLOW-04 step 2 |
@@ -44,7 +44,7 @@ A venue's room is built in 3D from tape measurements: floor outline, ceiling hei
 
 ## Acceptance criteria
 
-- (P1) **Given** the sample rectangle venue, **when** loaded, **then** walls measure 20 ft and 15 ft and the ceiling matches `ceilingIn` (check with a dev ruler readout).
+- (P1) **Given** the sample rectangle venue, **when** loaded, **then** walls measure 20 ft and 15 ft and wall tops match `ceilingIn` (check with a dev ruler readout).
 - (P1) **Given** two venues with different `ceilingIn`, **when** each is loaded, **then** each room's walls use its own height.
 - (P1) **Given** a bar wall with a soffit (`dropIn: 18` over 12 ft), **when** loaded, **then** that section of wall is 18 in shorter and the debug view labels it.
 - (P1) **Given** a wall photo, **when** loaded, **then** it fills the wall without visible distortion when the aspect ratio matches.
