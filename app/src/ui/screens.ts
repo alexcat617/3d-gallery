@@ -28,6 +28,32 @@ export interface RoomChromeOptions {
   devValidationMessages?: string[];
 }
 
+export interface IntroOptions {
+  venueName: string;
+  artistName: string;
+  onStart: () => void;
+}
+
+export interface PitchChromeOptions extends RoomChromeOptions {
+  viewpointCount: number;
+  viewpointIndex: number;
+  viewpointLabel: string;
+  viewpoints: { id: string; label: string }[];
+  onPrev: () => void;
+  onNext: () => void;
+  onPickViewpoint: (index: number) => void;
+  onFirstInteraction: () => void;
+  onExploreRoom: () => void;
+  onBackToTour: () => void;
+  onRecenterExplore: () => void;
+}
+
+export interface PitchChromeHandle {
+  updateViewpoint: (index: number, label: string) => void;
+  dismissHint: () => void;
+  setExploreMode: (exploring: boolean) => void;
+}
+
 /**
  * Owns the HTML layer above the canvas. Full screens (loading, error, list,
  * not-found, home) cover the canvas; room chrome sits on top of it.
@@ -152,6 +178,35 @@ export class Screens {
     );
   }
 
+  showIntro({ venueName, artistName, onStart }: IntroOptions): void {
+    const startButton = el(
+      'button',
+      {
+        type: 'button',
+        class: 'button button--primary intro__start',
+        onClick: () => onStart(),
+      },
+      'Start',
+    );
+    this.reset();
+    this.stage.removeAttribute('aria-hidden');
+    this.root.append(
+      el(
+        'main',
+        { class: 'screen screen--intro' },
+        el(
+          'section',
+          { class: 'panel panel--center intro' },
+          el('h1', { class: 'panel__title' }, `Artwork by ${artistName}`),
+          el('p', { class: 'intro__for' }, 'for ', el('em', {}, venueName)),
+          el('p', {}, 'See how each piece fits on your walls at real size.'),
+          el('div', { class: 'actions' }, startButton),
+        ),
+      ),
+    );
+    startButton.focus();
+  }
+
   showHome(artistName: string): void {
     this.showPanel(
       el(
@@ -161,6 +216,225 @@ export class Screens {
         el('p', {}, 'Room previews are shared by private link.'),
       ),
     );
+  }
+
+  showPitchChrome(options: PitchChromeOptions): PitchChromeHandle {
+    const {
+      venueName,
+      artistName,
+      focusAllPieces,
+      onAllPieces,
+      devModeBanner,
+      devValidationMessages,
+      viewpointCount,
+      viewpointIndex,
+      viewpointLabel,
+      viewpoints,
+      onPrev,
+      onNext,
+      onPickViewpoint,
+      onFirstInteraction,
+      onExploreRoom,
+      onBackToTour,
+      onRecenterExplore,
+    } = options;
+
+    this.reset();
+    this.stage.removeAttribute('aria-hidden');
+
+    const statusLabel = el(
+      'span',
+      { class: 'viewpoint-bar__status' },
+      formatViewpointStatus(viewpointIndex, viewpointCount, viewpointLabel),
+    );
+    const listPanel = el(
+      'ul',
+      { class: 'viewpoint-list', hidden: true, id: 'viewpoint-list' },
+      ...viewpoints.map((vp, i) =>
+        el(
+          'li',
+          {},
+          el(
+            'button',
+            {
+              type: 'button',
+              class: 'viewpoint-list__item',
+              'aria-current': i === viewpointIndex ? 'true' : undefined,
+              onClick: () => {
+                onFirstInteraction();
+                onPickViewpoint(i);
+                listPanel.hidden = true;
+                picker.setAttribute('aria-expanded', 'false');
+              },
+            },
+            vp.label,
+          ),
+        ),
+      ),
+    );
+
+    const prevBtn = el(
+      'button',
+      {
+        type: 'button',
+        class: 'viewpoint-bar__arrow',
+        'aria-label': 'Previous view',
+        onClick: () => {
+          onFirstInteraction();
+          onPrev();
+        },
+      },
+      '‹',
+    );
+    const nextBtn = el(
+      'button',
+      {
+        type: 'button',
+        class: 'viewpoint-bar__arrow',
+        'aria-label': 'Next view',
+        onClick: () => {
+          onFirstInteraction();
+          onNext();
+        },
+      },
+      '›',
+    );
+
+    const picker = el(
+      'button',
+      {
+        type: 'button',
+        class: 'viewpoint-bar__picker',
+        'aria-expanded': 'false',
+        'aria-controls': 'viewpoint-list',
+        onClick: () => {
+          onFirstInteraction();
+          const open = listPanel.hidden;
+          listPanel.hidden = !open;
+          picker.setAttribute('aria-expanded', open ? 'true' : 'false');
+        },
+      },
+      statusLabel,
+    );
+
+    const hint = el(
+      'p',
+      {
+        class: 'pitch-hint',
+        role: 'status',
+      },
+      'Swipe or tap the arrows for each wall — or explore the whole room.',
+    );
+
+    const exploreRoom = el(
+      'button',
+      {
+        type: 'button',
+        class: 'button button--secondary',
+        onClick: () => {
+          onFirstInteraction();
+          onExploreRoom();
+        },
+      },
+      'Explore room',
+    );
+
+    const allPieces = el(
+      'button',
+      { type: 'button', class: 'button button--secondary', onClick: onAllPieces },
+      'All Pieces',
+    );
+
+    const recenterExplore = el(
+      'button',
+      {
+        type: 'button',
+        class: 'button button--secondary',
+        onClick: onRecenterExplore,
+      },
+      'Recenter',
+    );
+
+    const backToTour = el(
+      'button',
+      {
+        type: 'button',
+        class: 'button button--primary explore-bar__back',
+        onClick: onBackToTour,
+      },
+      'Back to guided views',
+    );
+
+    const exploreActions = el('div', { class: 'explore-bar__actions' }, recenterExplore, backToTour);
+
+    const exploreBar = el(
+      'div',
+      { class: 'explore-bar', hidden: true, role: 'region', 'aria-label': 'Explore the room' },
+      el('p', { class: 'explore-bar__hint' }, 'Drag to look around the whole space.'),
+      exploreActions,
+    );
+
+    const devBanner =
+      devModeBanner && el('p', { class: 'dev-banner', role: 'status' }, devModeBanner);
+    const devList =
+      devValidationMessages &&
+      devValidationMessages.length > 0 &&
+      el(
+        'aside',
+        { class: 'dev-validation', 'aria-label': 'Venue validation messages' },
+        el('p', { class: 'dev-validation__title' }, 'Check (dev)'),
+        el('ul', {}, ...devValidationMessages.map((msg) => el('li', {}, msg))),
+      );
+
+    const viewpointBar = el(
+      'nav',
+      { class: 'viewpoint-bar', 'aria-label': 'Room views' },
+      prevBtn,
+      el('div', { class: 'viewpoint-bar__center' }, picker, listPanel),
+      nextBtn,
+    );
+
+    this.root.append(
+      el(
+        'header',
+        { class: 'topbar' },
+        el(
+          'div',
+          { class: 'topbar__titles' },
+          el('h1', { class: 'topbar__title' }, venueName),
+          el('p', { class: 'topbar__byline' }, `Artwork by ${artistName}`),
+        ),
+        el('div', { class: 'topbar__actions' }, exploreRoom, allPieces),
+      ),
+      hint,
+      viewpointBar,
+      exploreBar,
+      ...(devBanner ? [devBanner] : []),
+      ...(devList ? [devList] : []),
+    );
+
+    if (focusAllPieces) allPieces.focus();
+
+    return {
+      updateViewpoint: (index: number, label: string) => {
+        statusLabel.textContent = formatViewpointStatus(index, viewpointCount, label);
+        listPanel.querySelectorAll<HTMLButtonElement>('.viewpoint-list__item').forEach((btn, i) => {
+          btn.setAttribute('aria-current', i === index ? 'true' : 'false');
+        });
+      },
+      dismissHint: () => {
+        hint.remove();
+      },
+      setExploreMode: (exploring: boolean) => {
+        viewpointBar.hidden = exploring;
+        exploreBar.hidden = !exploring;
+        exploreRoom.hidden = exploring;
+        if (exploring) {
+          hint.remove();
+          backToTour.focus();
+        }
+      },
+    };
   }
 
   showRoom({
@@ -242,4 +516,9 @@ function heading(text: string): HTMLHeadingElement {
 
 function assetUrl(path: string): string {
   return /^https?:\/\//.test(path) ? path : `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+}
+
+function formatViewpointStatus(index: number, total: number, label: string): string {
+  if (total <= 1) return label;
+  return `${index + 1} of ${total} · ${label}`;
 }
