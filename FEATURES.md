@@ -26,7 +26,7 @@ Work item shape: Persona lens → User stories → Requirements → Acceptance c
 | [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `building` | FLOW-00, 03 | `feat/feat-00-foundation` |
 | [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `building` | FLOW-04 | `feat/feat-01-measured-room` |
 | [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `building` | FLOW-04 | `feat/feat-02-artwork-to-scale` |
-| [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `ready` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
+| [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `building` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
 | [FEAT-04](./features/FEAT-04-artwork-card.md) | Artwork info card + list view | B | `ready` | FLOW-02, 03 | `feat/feat-04-artwork-card` |
 | [FEAT-05](./features/FEAT-05-arrange-mode.md) | Arrange mode (artist) | C | `ready` | FLOW-05 | `feat/feat-05-arrange-mode` |
 | [FEAT-06](./features/FEAT-06-scanned-room.md) | Scanned room (realism) | D | `draft` (needs D-07) | FLOW-00, 04 | `feat/feat-06-scanned-room` |
@@ -92,6 +92,7 @@ Don't commit or push unless asked.
 | Date | Change |
 |------|--------|
 | 2026-11-06 | **FEAT-01 measured room (WIP):** `createMeasuredRoom` — textured walls, openings, soffits, fixtures, sloped wall tops, `?debug` labels + keep-clear + validation UI; `?orbit=1` dev camera; `venues/_template.json`; sample venue exercises aspect + opening checks |
+| 2026-11-09 | **FEAT-03 (WIP):** Intro + Start; viewpoint bar (prev/next, named list); glide navigation, drag-to-look limits, swipe; auto viewpoints per art wall; `?orbit=1` dev-only |
 | 2026-11-06 | **FEAT-02 (WIP):** Artwork boxes at true scale from `artworks.json` + `placements[]`; shared `hang-height` helper; dev validation (overlap window/other art, keep-clear, top margin, aspect, resolution); sample pieces in `public/art/` |
 | 2026-11-06 | Venues **Stalk** and **Topolino**: `stalk` / `topolino` venue JSON stubs, `docs/venues/README.md` index; Stalk reference images in `captures/stalk/` (private) |
 | 2026-11-06 | **Stalk:** `ceilingIn` 144 (~12 ft); wall labels in `stalk.json` for art plan (1 on short/slanted wall, up to 2 on ~40′ bench wall); details in [docs/venues/README.md](./docs/venues/README.md) |
