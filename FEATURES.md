@@ -23,14 +23,14 @@ Work item shape: Persona lens → User stories → Requirements → Acceptance c
 
 | ID | Feature | Wave | Status | Flows | Branch |
 |----|---------|------|--------|-------|--------|
-| [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `building` | FLOW-00, 03 | `feat/feat-00-foundation` |
-| [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `building` | FLOW-04 | `feat/feat-01-measured-room` |
-| [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `building` | FLOW-04 | `feat/feat-02-artwork-to-scale` |
-| [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `building` | FLOW-00, 01 | `feat/feat-03-viewpoints` |
-| [FEAT-04](./features/FEAT-04-artwork-card.md) | Artwork info card + list view | B | `building` | FLOW-02, 03 | `feat/feat-04-artwork-card` |
-| [FEAT-05](./features/FEAT-05-arrange-mode.md) | Arrange mode (artist) | C | `building` | FLOW-05 | `feat/feat-05-arrange-mode` |
-| [FEAT-06](./features/FEAT-06-scanned-room.md) | Scanned room (realism) | D | `draft` (needs D-07) | FLOW-00, 04 | `feat/feat-06-scanned-room` |
-| [FEAT-07](./features/FEAT-07-share-performance.md) | Share links + performance | D | `building` | FLOW-00 | `feat/feat-07-share-performance` |
+| [FEAT-00](./features/FEAT-00-foundation.md) | Foundation: app, venue links, loading, deploy | A | `done` | FLOW-00, 03 | `main` |
+| [FEAT-01](./features/FEAT-01-measured-room.md) | Measured venue room | A | `done` | FLOW-04 | `main` |
+| [FEAT-02](./features/FEAT-02-artwork-to-scale.md) | Artwork to scale | A | `done` | FLOW-04 | `main` |
+| [FEAT-03](./features/FEAT-03-viewpoints.md) | Viewpoints (owner navigation) | B | `done` | FLOW-00, 01 | `main` |
+| [FEAT-04](./features/FEAT-04-artwork-card.md) | Artwork info card + list view | B | `done` | FLOW-02, 03 | `main` |
+| [FEAT-05](./features/FEAT-05-arrange-mode.md) | Arrange mode (artist) | C | `done` | FLOW-05 | `main` |
+| [FEAT-06](./features/FEAT-06-scanned-room.md) | Scanned room (realism) | D | `building` (D-07 scan vendor TBD) | FLOW-00, 04 | `feat/feat-06-scanned-room` |
+| [FEAT-07](./features/FEAT-07-share-performance.md) | Share links + performance | D | `done` (REQ-07-04 WebP pipeline later) | FLOW-00 | `main` |
 
 **Status values:** `draft` → `ready` (decisions resolved) → `building` → `done` (merged to `main`)
 
@@ -91,6 +91,9 @@ Don't commit or push unless asked.
 
 | Date | Change |
 |------|--------|
+| 2026-11-09 | **FEAT-03:** Auto viewpoints frame art in room context (standoff from piece size + tour FOV; fixes tight phone crop on large work) |
+| 2026-11-09 | **FEAT-06 (WIP):** `VenueScan` + `scan-mode` scaffold (measured fallback until Spark); **Stalk** prototype placement (`abstract-48x41` on short wall); FEAT-00…07 marked `done` on `main` |
+| 2026-11-09 | **FEAT-07:** Merged to `main` — OG/Twitter meta, `shareImage`, tab-hidden render pause, dev stats; sample + Stalk use `abstract-48x41.png` preview |
 | 2026-11-09 | **FEAT-07 (WIP):** Open Graph / Twitter meta on built `v/<id>/index.html`; `pagesOrigin` in `site.json`; optional `shareImage`; tab-hidden render pause; `?debug` frame timing overlay |
 | 2026-11-06 | **FEAT-01 measured room (WIP):** `createMeasuredRoom` — textured walls, openings, soffits, fixtures, sloped wall tops, `?debug` labels + keep-clear + validation UI; `?orbit=1` dev camera; `venues/_template.json`; sample venue exercises aspect + opening checks |
 | 2026-11-09 | **FEAT-05 (WIP):** Dev `?arrange` side panel — wall pick, tap-to-place at recommended height, drag/nudge, snap center, validation + keep-clear override, save viewpoints, Save → venue JSON API, preview as owner |

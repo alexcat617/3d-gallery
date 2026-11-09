@@ -1,16 +1,27 @@
 import { Vector3 } from 'three';
+import { artworks as defaultArtworks } from '../data';
 import { DEFAULT_EYE_HEIGHT_IN, type RoomView } from '../scene/placeholder-room';
 import { polygonCentroid } from '../scene/wall-geometry';
 import { inToM } from './units';
-import type { Placement, Venue, Viewpoint } from '../types';
+import type { Artwork, Placement, Venue, Viewpoint } from '../types';
 
-const DEFAULT_STANDOFF_IN = 72;
 const SEATED_EYE_IN = 48;
 
+/** Matches `Viewer` vertical FOV (`scene/viewer.ts`). */
+const TOUR_CAMERA_FOV_DEG = 60;
+/** Portrait phone width/height for auto-framing heuristics. */
+const PHONE_VIEW_ASPECT = 9 / 16;
+/** Target share of vertical FOV for the tallest piece on the wall (wall context around it). */
+const ART_FILL_VERTICAL = 0.36;
+const ART_FILL_HORIZONTAL = 0.4;
+const MIN_STANDOFF_IN = 72;
+const MAX_STANDOFF_IN = 168;
+const ROOM_STANDOFF_MARGIN_IN = 18;
+
 /** Saved viewpoints or one auto view per wall that has art (pitch order). */
-export function resolveViewpoints(venue: Venue): Viewpoint[] {
+export function resolveViewpoints(venue: Venue, catalog: Artwork[] = defaultArtworks): Viewpoint[] {
   if (venue.viewpoints.length > 0) return venue.viewpoints;
-  return autoViewpointsForArtWalls(venue);
+  return autoViewpointsForArtWalls(venue, catalog);
 }
 
 export function viewpointToRoomView(vp: Viewpoint): RoomView {
@@ -21,7 +32,7 @@ export function viewpointToRoomView(vp: Viewpoint): RoomView {
   };
 }
 
-function autoViewpointsForArtWalls(venue: Venue): Viewpoint[] {
+function autoViewpointsForArtWalls(venue: Venue, catalog: Artwork[]): Viewpoint[] {
   const wallsWithArt = new Set(venue.placements.map((p) => p.wallId));
   const centroid = polygonCentroid(venue.corners);
   const n = venue.corners.length;
@@ -31,7 +42,7 @@ function autoViewpointsForArtWalls(venue: Venue): Viewpoint[] {
     if (!wallsWithArt.has(wall.id)) return;
     const start = venue.corners[wi]!;
     const end = venue.corners[(wi + 1) % n]!;
-    const vp = viewpointFacingWall(wall.id, wall.label, start, end, centroid, venue);
+    const vp = viewpointFacingWall(wall.id, wall.label, start, end, centroid, venue, catalog);
     views.push(vp);
     if (wall.furnitureTopIn !== undefined && wall.furnitureTopIn > 0) {
       views.push(
@@ -42,6 +53,7 @@ function autoViewpointsForArtWalls(venue: Venue): Viewpoint[] {
           end,
           centroid,
           venue,
+          catalog,
           SEATED_EYE_IN,
         ),
       );
@@ -58,6 +70,7 @@ function viewpointFacingWall(
   end: { xIn: number; zIn: number },
   centroid: ReturnType<typeof polygonCentroid>,
   venue: Venue,
+  catalog: Artwork[],
   eyeIn = DEFAULT_EYE_HEIGHT_IN,
 ): Viewpoint {
   const wallId = id.replace(/-seated$/, '');
@@ -74,7 +87,13 @@ function viewpointFacingWall(
   const inwardLen = Math.hypot(inwardX, inwardZ) || 1;
   const ux = inwardX / inwardLen;
   const uz = inwardZ / inwardLen;
-  const standoff = Math.min(DEFAULT_STANDOFF_IN, Math.max(36, inwardLen * 0.35));
+
+  const seated = eyeIn < DEFAULT_EYE_HEIGHT_IN;
+  const framing = framingStandoffIn(wallId, venue.placements, catalog);
+  const roomCap = maxStandoffIntoRoom(inwardLen);
+  let standoff = Math.min(MAX_STANDOFF_IN, Math.max(MIN_STANDOFF_IN, framing));
+  standoff = Math.min(standoff, roomCap);
+  if (seated) standoff = Math.max(MIN_STANDOFF_IN * 0.85, standoff * 0.92);
 
   return {
     id,
@@ -87,6 +106,45 @@ function viewpointFacingWall(
     lookAt: { xIn: targetXIn, yIn: focal.lookYIn, zIn: targetZIn },
     eyeHeightIn: eyeIn,
   };
+}
+
+/** Distance so art occupies ~ART_FILL_* of the tour camera FOV (matches phone portrait). */
+function framingStandoffIn(
+  wallId: string,
+  placements: Placement[],
+  catalog: Artwork[],
+): number {
+  const byId = new Map(catalog.map((a) => [a.id, a]));
+  const onWall = placements.filter((p) => p.wallId === wallId);
+  let maxW = 24;
+  let maxH = 36;
+  for (const p of onWall) {
+    const art = byId.get(p.artworkId);
+    if (!art) continue;
+    const outer = outerSizeIn(art);
+    maxW = Math.max(maxW, outer.w);
+    maxH = Math.max(maxH, outer.h);
+  }
+
+  const vHalfRad = (TOUR_CAMERA_FOV_DEG * Math.PI) / 180 / 2;
+  const hHalfRad = Math.atan(Math.tan(vHalfRad) * PHONE_VIEW_ASPECT);
+
+  const distForHeight = maxH / 2 / Math.tan(vHalfRad * ART_FILL_VERTICAL);
+  const distForWidth = maxW / 2 / Math.tan(hHalfRad * ART_FILL_HORIZONTAL);
+  return Math.max(distForHeight, distForWidth);
+}
+
+function outerSizeIn(art: Artwork): { w: number; h: number } {
+  const frameW = art.frame?.widthIn ?? 0;
+  if (frameW > 0 && art.frame) {
+    return { w: art.widthIn + 2 * frameW, h: art.heightIn + 2 * frameW };
+  }
+  return { w: art.widthIn, h: art.heightIn };
+}
+
+/** Max step into the room from a wall point (centroid distance × 2 ≈ opposite wall in a simple rectangle). */
+function maxStandoffIntoRoom(inwardLenToCentroid: number): number {
+  return Math.max(MIN_STANDOFF_IN, inwardLenToCentroid * 2 - ROOM_STANDOFF_MARGIN_IN);
 }
 
 /** Center auto views on hung art instead of the geometric wall midpoint. */

@@ -6,6 +6,7 @@ import { LoadTracker } from './lib/load-tracker';
 import { pickQuality } from './lib/quality';
 import { bindVisibilityPause, isRenderPaused } from './lib/render-schedule';
 import { parseRoute } from './lib/route';
+import { describeScan, resolveInitialRoomMode } from './lib/scan-mode';
 import { applyRuntimeShareMeta } from './lib/share-meta';
 import { viewpointIndexForArtwork } from './lib/viewpoint-for-art';
 import { resolveViewpoints, viewpointToRoomView } from './lib/viewpoints';
@@ -81,6 +82,11 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
   try {
     venue = await tracker.track(`venue:${venueId}`, loadVenue(venueId));
     applyRuntimeShareMeta(site, venue);
+    if (debugMode && venue.scan) {
+      const mode = resolveInitialRoomMode(venue);
+      const scanNote = describeScan(venue.scan);
+      console.info(`[FEAT-06] ${mode} room (${scanNote ?? 'scan'} — Spark not wired yet).`);
+    }
     if (debugMode && !devStats) devStats = new DevStatsOverlay();
 
     if (simulate === 'no-webgl' || !supportsWebGL2()) {

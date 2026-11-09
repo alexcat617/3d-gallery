@@ -22,6 +22,6 @@ When a capture folder has a sketch and wall photos, ask: **Build the venue file 
 | Ceiling | **~12 ft** (`ceilingIn`: 144 in) — refine if the bar or other zones differ |
 | Art intent | **1** piece on the **shorter slanted** wall segment; **up to 2** on the **~40′** wall (bench + small tables) |
 | JSON | Wall ids `short-wall-sketch` and `bench-long-wall` in `app/src/data/venues/stalk.json` (placeholder rectangle until the notched outline is built) |
-| Placements | Added when pieces exist in `app/src/data/artworks.json` |
+| Placements | **`abstract-48x41`** on `short-wall-sketch`; **`harbor-dusk`** on `bench-long-wall` (pitch prototype; refine outline + views in arrange) |
 
 Private visit notes and reference images live in **`captures/stalk/`** (folder is git-ignored; images stay local). Filenames include sketch + storefront/bar refs and **slanted wall from outside**: `reference-slanted-wall-exterior-286-window.png`, `reference-slanted-wall-exterior-storefront.png` (see `captures/stalk/notes.md` on your machine).

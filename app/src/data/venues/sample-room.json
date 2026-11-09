@@ -18,7 +18,7 @@
   "walls": [
     {
       "id": "north-wall",
-      "label": "North wall"
+      "label": "North wall — featured piece"
     },
     {
       "id": "east-wall",
