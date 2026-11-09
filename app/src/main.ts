@@ -5,15 +5,18 @@ import { artworks, artworksForVenue, hasVenue, loadVenue, site } from './data';
 import { LoadTracker } from './lib/load-tracker';
 import { pickQuality } from './lib/quality';
 import { parseRoute } from './lib/route';
+import { viewpointIndexForArtwork } from './lib/viewpoint-for-art';
 import { resolveViewpoints, viewpointToRoomView } from './lib/viewpoints';
 import { supportsWebGL2 } from './lib/webgl';
 import { addArtworkMeshes } from './scene/artwork-meshes';
+import { ArtworkOutline } from './scene/artwork-outline';
+import { findArtworkGroup, pickArtworkAt } from './scene/artwork-pick';
 import { createMeasuredRoom } from './scene/measured-room';
 import type { RoomView } from './scene/placeholder-room';
 import { roomExploreView, roomOrbitTarget } from './scene/explore-orbit';
 import { ViewpointNavigation } from './scene/viewpoint-navigation';
 import { Viewer } from './scene/viewer';
-import type { Venue, Viewpoint } from './types';
+import type { Artwork, Venue, Viewpoint } from './types';
 import type { PitchChromeHandle } from './ui/screens';
 import { Screens } from './ui/screens';
 
@@ -37,6 +40,9 @@ let activeRoom: Group | undefined;
 let tourViewIndex = 0;
 let pitchExploring = false;
 let exploreEscapeHandler: ((event: KeyboardEvent) => void) | undefined;
+let disposeExploreArtPick: (() => void) | undefined;
+let pitchCtx: PitchContext | undefined;
+const artworkOutline = new ArtworkOutline();
 
 interface PitchContext {
   venue: Venue;
@@ -135,6 +141,7 @@ async function openVenue(venueId: string, attempt: number): Promise<void> {
 function beginPitch(ctx: PitchContext): void {
   if (!viewer || ctx.viewpoints.length === 0 || !activeRoom) return;
 
+  pitchCtx = ctx;
   exitExploreMode();
   teardownViewpoints();
 
@@ -148,14 +155,31 @@ function beginPitch(ctx: PitchContext): void {
   const onViewChange = (index: number, vp: Viewpoint) => {
     tourViewIndex = index;
     pitchChrome?.updateViewpoint(index, vp.label);
+    if (screens.isArtworkCardOpen()) {
+      screens.closeArtworkCard();
+    } else {
+      artworkOutline.clear();
+      viewer?.render();
+    }
   };
 
   viewpointNav = new ViewpointNavigation(viewer, ctx.viewpoints, viewer.renderer.domElement, onViewChange);
+  bindViewpointArtPick();
   viewpointNav.goTo(tourViewIndex, { instant: true });
+
+  const venueArtworks = artworksForVenue(ctx.venue);
 
   pitchChrome = screens.showPitchChrome({
     venueName: ctx.venue.name,
     artistName: site.artistName,
+    focusArtworks: venueArtworks,
+    onOpenArtwork: (artworkId) => {
+      const trigger = document.activeElement;
+      openArtworkCard(
+        artworkId,
+        trigger instanceof HTMLElement ? trigger : undefined,
+      );
+    },
     onAllPieces: () =>
       showList(ctx.venue, {
         onBack: () => beginPitch(ctx),
@@ -190,11 +214,95 @@ function beginPitch(ctx: PitchContext): void {
   viewpointNav.onHintDismiss = dismissHint;
 }
 
+function bindViewpointArtPick(): void {
+  if (!viewpointNav || !viewer || !activeRoom) return;
+  viewpointNav.onShortTap = (clientX, clientY) => handleArtPick(clientX, clientY);
+}
+
+function attachExploreArtPick(): void {
+  teardownExploreArtPick();
+  if (!viewer) return;
+  const canvas = viewer.renderer.domElement;
+  const tapThreshold = 12;
+  let down: { x: number; y: number } | undefined;
+  const onDown = (event: PointerEvent) => {
+    if (event.button !== 0) return;
+    down = { x: event.clientX, y: event.clientY };
+  };
+  const onUp = (event: PointerEvent) => {
+    if (!down) return;
+    const dx = event.clientX - down.x;
+    const dy = event.clientY - down.y;
+    down = undefined;
+    if (Math.abs(dx) < tapThreshold && Math.abs(dy) < tapThreshold) {
+      handleArtPick(event.clientX, event.clientY);
+    }
+  };
+  canvas.addEventListener('pointerdown', onDown);
+  canvas.addEventListener('pointerup', onUp);
+  disposeExploreArtPick = () => {
+    canvas.removeEventListener('pointerdown', onDown);
+    canvas.removeEventListener('pointerup', onUp);
+  };
+}
+
+function teardownExploreArtPick(): void {
+  disposeExploreArtPick?.();
+  disposeExploreArtPick = undefined;
+}
+
+function artworkById(id: string): Artwork | undefined {
+  return artworks.find((art) => art.id === id);
+}
+
+function highlightArtwork(artworkId: string): void {
+  if (!viewer || !activeRoom) return;
+  const group = findArtworkGroup(activeRoom, artworkId);
+  artworkOutline.setSelection(viewer.scene, group);
+  viewer.render();
+}
+
+function openArtworkCard(artworkId: string, returnFocus?: HTMLElement): void {
+  if (!viewer || !activeRoom) return;
+  const art = artworkById(artworkId);
+  if (!art) return;
+  highlightArtwork(artworkId);
+  pitchChrome?.setCardOpen(true);
+  screens.showArtworkCard(art, {
+    onClose: () => {
+      pitchChrome?.setCardOpen(false);
+      artworkOutline.clear();
+      viewer?.render();
+    },
+    returnFocus,
+  });
+}
+
+function handleArtPick(clientX: number, clientY: number): void {
+  if (!viewer || !activeRoom || screens.isArtworkCardOpen()) return;
+  const id = pickArtworkAt(
+    clientX,
+    clientY,
+    viewer.renderer.domElement,
+    viewer.camera,
+    activeRoom,
+  );
+  if (id) openArtworkCard(id);
+}
+
+function showArtworkOnWall(artworkId: string, ctx: PitchContext): void {
+  beginPitch(ctx);
+  const index = viewpointIndexForArtwork(artworkId, ctx.venue, ctx.viewpoints);
+  viewpointNav?.goTo(index);
+  highlightArtwork(artworkId);
+}
+
 function enterExploreRoom(ctx: PitchContext): void {
   if (!viewer || !activeRoom || pitchExploring) return;
   tourViewIndex = viewpointNav?.currentIndex ?? tourViewIndex;
   teardownViewpoints();
   setupExploreOrbit(activeRoom);
+  attachExploreArtPick();
   pitchExploring = true;
   pitchChrome?.setExploreMode(true);
   exploreEscapeHandler = (event) => {
@@ -206,6 +314,7 @@ function enterExploreRoom(ctx: PitchContext): void {
 function exitExploreMode(ctx?: PitchContext): void {
   if (!pitchExploring) return;
   pitchExploring = false;
+  teardownExploreArtPick();
   teardownOrbit();
   if (exploreEscapeHandler) {
     document.removeEventListener('keydown', exploreEscapeHandler);
@@ -216,8 +325,15 @@ function exitExploreMode(ctx?: PitchContext): void {
     const onViewChange = (index: number, vp: Viewpoint) => {
       tourViewIndex = index;
       pitchChrome?.updateViewpoint(index, vp.label);
+      if (screens.isArtworkCardOpen()) {
+        screens.closeArtworkCard();
+      } else {
+        artworkOutline.clear();
+        viewer!.render();
+      }
     };
     viewpointNav = new ViewpointNavigation(viewer, ctx.viewpoints, viewer.renderer.domElement, onViewChange);
+    bindViewpointArtPick();
     viewpointNav.onHintDismiss = () => pitchChrome?.dismissHint();
     viewpointNav.goTo(tourViewIndex, { instant: true });
   }
@@ -278,6 +394,9 @@ function teardownViewpoints(): void {
 function teardownPitch(): void {
   exitExploreMode();
   teardownViewpoints();
+  teardownExploreArtPick();
+  screens.closeArtworkCard();
+  artworkOutline.clear();
   pitchChrome = undefined;
 }
 
@@ -297,10 +416,21 @@ function showRoom(venue: Venue, validationMessages: string[], options: { focusAl
 
 function showList(venue: Venue, options: { unsupported?: boolean; onBack?: () => void }): void {
   teardownPitch();
+  const viewpoints = resolveViewpoints(venue);
+  const canShowOnWall = !options.unsupported && viewer !== undefined && viewpoints.length > 0;
   screens.showList({
     venue,
     artworks: artworksForVenue(venue),
     artistName: site.artistName,
+    onShowOnWall: canShowOnWall
+      ? (artworkId) => {
+          const ctx: PitchContext =
+            pitchCtx?.venue.id === venue.id
+              ? pitchCtx
+              : { venue, viewpoints, validationMessages: [] };
+          showArtworkOnWall(artworkId, ctx);
+        }
+      : undefined,
     ...options,
   });
 }

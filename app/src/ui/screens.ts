@@ -1,4 +1,4 @@
-import { formatSize } from '../lib/units';
+import { artworkAccessibleName, artworkSizeLabel } from '../lib/artwork-display';
 import type { Artwork, Venue } from '../types';
 import { el } from './dom';
 
@@ -9,6 +9,13 @@ export interface ListOptions {
   /** Shown when 3D can't run on this device. */
   unsupported?: boolean;
   onBack?: () => void;
+  /** When 3D is available, jump to the wall view for this piece. */
+  onShowOnWall?: (artworkId: string) => void;
+}
+
+export interface ArtworkCardOptions {
+  onClose: () => void;
+  returnFocus?: HTMLElement;
 }
 
 export interface ErrorOptions {
@@ -39,6 +46,7 @@ export interface PitchChromeOptions extends RoomChromeOptions {
   viewpointIndex: number;
   viewpointLabel: string;
   viewpoints: { id: string; label: string }[];
+  focusArtworks: Artwork[];
   onPrev: () => void;
   onNext: () => void;
   onPickViewpoint: (index: number) => void;
@@ -46,12 +54,14 @@ export interface PitchChromeOptions extends RoomChromeOptions {
   onExploreRoom: () => void;
   onBackToTour: () => void;
   onRecenterExplore: () => void;
+  onOpenArtwork: (artworkId: string) => void;
 }
 
 export interface PitchChromeHandle {
   updateViewpoint: (index: number, label: string) => void;
   dismissHint: () => void;
   setExploreMode: (exploring: boolean) => void;
+  setCardOpen: (open: boolean) => void;
 }
 
 /**
@@ -62,6 +72,7 @@ export class Screens {
   private progressBar: HTMLElement | undefined;
   private progressText: HTMLElement | undefined;
   private escapeHandler: ((event: KeyboardEvent) => void) | undefined;
+  private artDialog: HTMLDialogElement | undefined;
 
   constructor(
     private readonly root: HTMLElement,
@@ -121,7 +132,55 @@ export class Screens {
     );
   }
 
-  showList({ venue, artworks, artistName, unsupported, onBack }: ListOptions): void {
+  showArtworkCard(art: Artwork, { onClose, returnFocus }: ArtworkCardOptions): void {
+    this.closeArtworkCard();
+    const titleId = 'art-card-title';
+    const closeButton = el(
+      'button',
+      {
+        type: 'button',
+        class: 'button button--secondary art-card__close',
+        onClick: () => this.artDialog?.close(),
+      },
+      'Close',
+    );
+    const dialog = el(
+      'dialog',
+      {
+        class: 'art-card',
+        'aria-labelledby': titleId,
+      },
+      el('h2', { id: titleId, class: 'art-card__title' }, art.title),
+      el('p', { class: 'art-card__medium' }, art.medium),
+      el('p', { class: 'art-card__size' }, artworkSizeLabel(art)),
+      el('div', { class: 'art-card__actions' }, closeButton),
+    );
+
+    dialog.addEventListener('close', () => {
+      onClose();
+      returnFocus?.focus();
+    });
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    this.artDialog = dialog;
+    this.root.append(dialog);
+    dialog.showModal();
+    closeButton.focus();
+  }
+
+  closeArtworkCard(): void {
+    if (this.artDialog?.open) this.artDialog.close();
+    this.artDialog?.remove();
+    this.artDialog = undefined;
+  }
+
+  isArtworkCardOpen(): boolean {
+    return this.artDialog?.open === true;
+  }
+
+  showList({ venue, artworks, artistName, unsupported, onBack, onShowOnWall }: ListOptions): void {
     const wallLabels = new Map(venue.walls.map((wall) => [wall.id, wall.label]));
     const items = venue.placements
       .map((placement) => ({ placement, art: artworks.find((a) => a.id === placement.artworkId) }))
@@ -143,8 +202,18 @@ export class Screens {
                   {},
                   el('h2', { class: 'piece__title' }, art.title),
                   el('p', {}, art.medium),
-                  el('p', {}, formatSize(art.widthIn, art.heightIn)),
+                  el('p', {}, artworkSizeLabel(art)),
                   el('p', { class: 'piece__wall' }, wallLabels.get(placement.wallId) ?? ''),
+                  onShowOnWall &&
+                    el(
+                      'button',
+                      {
+                        type: 'button',
+                        class: 'button button--secondary piece__show',
+                        onClick: () => onShowOnWall(art.id),
+                      },
+                      'Show on wall',
+                    ),
                 ),
               ),
             ),
@@ -237,6 +306,8 @@ export class Screens {
       onExploreRoom,
       onBackToTour,
       onRecenterExplore,
+      focusArtworks,
+      onOpenArtwork,
     } = options;
 
     this.reset();
@@ -323,7 +394,23 @@ export class Screens {
         class: 'pitch-hint',
         role: 'status',
       },
-      'Swipe or tap the arrows for each wall — or explore the whole room.',
+      'Tap a piece for details · swipe or use arrows for each wall.',
+    );
+
+    const artFocusList = el(
+      'div',
+      { class: 'art-focus-list', 'aria-label': 'Pieces in this room' },
+      ...focusArtworks.map((art) =>
+        el(
+          'button',
+          {
+            type: 'button',
+            class: 'art-focus-list__btn',
+            onClick: () => onOpenArtwork(art.id),
+          },
+          artworkAccessibleName(art),
+        ),
+      ),
     );
 
     const exploreRoom = el(
@@ -406,6 +493,7 @@ export class Screens {
         ),
         el('div', { class: 'topbar__actions' }, exploreRoom, allPieces),
       ),
+      artFocusList,
       hint,
       viewpointBar,
       exploreBar,
@@ -414,6 +502,20 @@ export class Screens {
     );
 
     if (focusAllPieces) allPieces.focus();
+
+    let exploreUi = false;
+    let cardUi = false;
+
+    const syncTourChrome = () => {
+      const hideTour = cardUi || exploreUi;
+      viewpointBar.hidden = hideTour;
+      exploreBar.hidden = !exploreUi || cardUi;
+      exploreRoom.hidden = exploreUi;
+      artFocusList.inert = cardUi;
+      viewpointBar.inert = cardUi;
+      exploreBar.inert = cardUi;
+      exploreRoom.disabled = cardUi;
+    };
 
     return {
       updateViewpoint: (index: number, label: string) => {
@@ -426,13 +528,16 @@ export class Screens {
         hint.remove();
       },
       setExploreMode: (exploring: boolean) => {
-        viewpointBar.hidden = exploring;
-        exploreBar.hidden = !exploring;
-        exploreRoom.hidden = exploring;
+        exploreUi = exploring;
         if (exploring) {
           hint.remove();
           backToTour.focus();
         }
+        syncTourChrome();
+      },
+      setCardOpen: (open: boolean) => {
+        cardUi = open;
+        syncTourChrome();
       },
     };
   }
@@ -506,6 +611,7 @@ export class Screens {
     }
     this.progressBar = undefined;
     this.progressText = undefined;
+    this.closeArtworkCard();
     this.root.replaceChildren();
   }
 }

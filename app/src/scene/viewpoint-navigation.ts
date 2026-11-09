@@ -9,6 +9,7 @@ const YAW_LIMIT = (35 * Math.PI) / 180;
 const PITCH_LIMIT = (15 * Math.PI) / 180;
 const EASE_BACK_MS = 350;
 const SWIPE_THRESHOLD_PX = 48;
+const TAP_THRESHOLD_PX = 14;
 
 const _forward = new Vector3();
 const _right = new Vector3();
@@ -109,6 +110,8 @@ export class ViewpointNavigation {
 
   /** Called on first drag / nav so the one-time hint can hide. */
   onHintDismiss?: () => void;
+  /** Tap without swipe (screen coords) — e.g. artwork pick. */
+  onShortTap?: (clientX: number, clientY: number) => void;
 
   dispose(): void {
     this.disposed = true;
@@ -167,9 +170,17 @@ export class ViewpointNavigation {
     if (event.pointerId !== this.pointerId) return;
     const totalDx = event.clientX - this.swipeStartX;
     const totalDy = event.clientY - this.swipeStartY;
-    if (Math.abs(totalDx) > SWIPE_THRESHOLD_PX && Math.abs(totalDx) > Math.abs(totalDy) * 1.2) {
+    const isSwipe =
+      Math.abs(totalDx) > SWIPE_THRESHOLD_PX && Math.abs(totalDx) > Math.abs(totalDy) * 1.2;
+    if (isSwipe) {
       if (totalDx < 0) this.next();
       else this.prev();
+    } else if (
+      Math.abs(totalDx) < TAP_THRESHOLD_PX &&
+      Math.abs(totalDy) < TAP_THRESHOLD_PX &&
+      this.onShortTap
+    ) {
+      this.onShortTap(event.clientX, event.clientY);
     }
     this.pointerId = undefined;
     try {
